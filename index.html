@@ -3,728 +3,509 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central Perk — Watch Friends</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Friends — Stream</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #faf6f0;
-    --warm-white: #fff9f2;
-    --espresso: #1a120b;
-    --mocha: #3c2415;
-    --caramel: #c27b3a;
-    --gold: #e8a94a;
-    --muted: #7a6a5a;
-    --card-bg: #fff4e8;
-    --border: #e8d8c4;
-    --progress-bg: #e8d8c4;
-    --progress-fill: #c27b3a;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--cream);
-    color: var(--espresso);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  header {
-    background: var(--espresso);
-    padding: 0 2rem;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 2px solid var(--caramel);
-  }
-
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: var(--gold);
-    letter-spacing: 0.02em;
-  }
-
-  .logo span {
-    color: #fff;
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .progress-pill {
-    background: var(--mocha);
-    border: 1px solid var(--caramel);
-    color: var(--gold);
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.35rem 0.9rem;
-    border-radius: 20px;
-    letter-spacing: 0.03em;
-  }
-
-  /* HERO / RESUME BANNER */
-  #resume-banner {
-    display: none;
-    background: linear-gradient(135deg, var(--mocha) 0%, #2a1a0e 100%);
-    padding: 2.5rem 2rem;
-    text-align: center;
-    border-bottom: 1px solid var(--caramel);
-    animation: fadeDown 0.4s ease;
-  }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  #resume-banner h2 {
-    font-family: 'Playfair Display', serif;
-    color: #fff;
-    font-size: 1.5rem;
-    margin-bottom: 0.4rem;
-  }
-
-  #resume-banner p {
-    color: var(--gold);
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
-    opacity: 0.9;
-  }
-
-  .btn-resume {
-    background: var(--caramel);
-    color: #fff;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn-resume:hover {
-    background: var(--gold);
-    transform: translateY(-1px);
-  }
-
-  .btn-resume svg {
-    width: 16px; height: 16px; fill: #fff;
-  }
-
-  /* MAIN LAYOUT */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem 4rem;
-  }
-
-  /* SEASON TABS */
-  .seasons-nav {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .season-tab {
-    background: transparent;
-    border: 1.5px solid var(--border);
-    color: var(--muted);
-    padding: 0.45rem 1.1rem;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .season-tab:hover {
-    border-color: var(--caramel);
-    color: var(--caramel);
-  }
-
-  .season-tab.active {
-    background: var(--espresso);
-    border-color: var(--espresso);
-    color: var(--gold);
-  }
-
-  /* SECTION HEADER */
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .section-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    color: var(--espresso);
-  }
-
-  .section-header .ep-count {
-    font-size: 0.85rem;
-    color: var(--muted);
-    font-weight: 300;
-  }
-
-  /* EPISODE GRID */
-  .episodes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.2rem;
-  }
-
-  .ep-card {
-    background: var(--card-bg);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .ep-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(26,18,11,0.1);
-    border-color: var(--caramel);
-  }
-
-  .ep-card.watched {
-    opacity: 0.65;
-  }
-
-  .video-available-dot {
-    position: absolute;
-    bottom: 10px; right: 10px;
-    width: 8px; height: 8px;
-    background: #4caf7d;
-    border-radius: 50%;
-    z-index: 3;
-    box-shadow: 0 0 0 2px rgba(76,175,125,0.3);
-  }
-
-  .ep-card.current {
-    border-color: var(--caramel);
-    box-shadow: 0 0 0 3px rgba(194,123,58,0.2);
-    opacity: 1;
-  }
-
-  .ep-thumb {
-    width: 100%;
-    height: 150px;
-    background: var(--espresso);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ep-thumb .thumb-bg {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #2a1a0e 0%, #1a120b 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    color: rgba(232,169,74,0.15);
-    user-select: none;
-  }
-
-  .ep-thumb .play-btn {
-    width: 44px; height: 44px;
-    background: rgba(194,123,58,0.85);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
-    transition: background 0.2s, transform 0.2s;
-  }
-
-  .ep-card:hover .play-btn {
-    background: var(--caramel);
-    transform: scale(1.1);
-  }
-
-  .play-btn svg { width: 18px; height: 18px; fill: #fff; margin-left: 2px; }
-
-  .watched-badge {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(26,18,11,0.75);
-    color: var(--gold);
-    font-size: 0.65rem;
-    font-weight: 500;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    z-index: 3;
-  }
-
-  .current-badge {
-    position: absolute;
-    top: 10px; left: 10px;
-    background: var(--caramel);
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 500;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    z-index: 3;
-  }
-
-  /* PROGRESS BAR ON THUMB */
-  .ep-progress-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: rgba(255,255,255,0.15);
-    z-index: 3;
-  }
-
-  .ep-progress-bar .fill {
-    height: 100%;
-    background: var(--gold);
-    transition: width 0.3s;
-  }
-
-  .ep-info {
-    padding: 0.9rem 1rem 1rem;
-  }
-
-  .ep-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.35rem;
-  }
-
-  .ep-number {
-    font-size: 0.72rem;
-    color: var(--caramel);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .ep-duration {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-weight: 300;
-  }
-
-  .ep-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.95rem;
-    color: var(--espresso);
-    line-height: 1.3;
-  }
-
-  /* VIDEO PLAYER MODAL */
-  #player-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(10,6,3,0.92);
-    z-index: 999;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.25s ease;
-  }
-
-  #player-overlay.active { display: flex; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .player-container {
-    width: 90vw;
-    max-width: 960px;
-    background: var(--espresso);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-    animation: scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-
-  @keyframes scaleIn {
-    from { transform: scale(0.94); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  .player-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.2rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .player-ep-info { }
-
-  .player-ep-label {
-    font-size: 0.72rem;
-    color: var(--gold);
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 0.15rem;
-  }
-
-  .player-ep-title {
-    font-family: 'Playfair Display', serif;
-    color: #fff;
-    font-size: 1rem;
-  }
-
-  .btn-close {
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: #fff;
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-
-  .btn-close:hover { background: rgba(255,255,255,0.15); }
-
-  /* VIDEO AREA */
-  .video-wrap {
-    position: relative;
-    aspect-ratio: 16/9;
-    background: #000;
-  }
-
-  .video-wrap video {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* fake video placeholder */
-  .video-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #0d0805 0%, #1a120b 50%, #0d0805 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    color: rgba(232,169,74,0.4);
-  }
-
-  .video-placeholder .big-icon {
-    font-size: 3.5rem;
-    opacity: 0.5;
-  }
-
-  .video-placeholder p {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: rgba(255,255,255,0.3);
-  }
-
-  .video-placeholder small {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.18);
-    font-weight: 300;
-  }
-
-  /* CUSTOM CONTROLS */
-  .controls {
-    padding: 0.9rem 1.2rem 1rem;
-    background: var(--mocha);
-  }
-
-  .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .time-label {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.5);
-    white-space: nowrap;
-    min-width: 38px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .seek-bar {
-    flex: 1;
-    height: 4px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-  }
-
-  .seek-fill {
-    height: 100%;
-    background: var(--caramel);
-    border-radius: 4px;
-    pointer-events: none;
-    transition: width 0.1s linear;
-  }
-
-  /* seek bar drag */
-  .seek-bar:hover .seek-fill { background: var(--gold); }
-
-  .controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .controls-left, .controls-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .ctrl-btn {
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    padding: 0.35rem;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ctrl-btn:hover {
-    color: #fff;
-    background: rgba(255,255,255,0.08);
-  }
-
-  .ctrl-btn svg { width: 20px; height: 20px; fill: currentColor; }
-  .ctrl-btn.play-pause svg { width: 24px; height: 24px; }
-
-  .volume-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .volume-slider {
-    width: 70px;
-    height: 4px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 4px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .volume-fill {
-    height: 100%;
-    width: 80%;
-    background: rgba(255,255,255,0.5);
-    border-radius: 4px;
-    pointer-events: none;
-  }
-
-  .next-ep-btn {
-    background: var(--caramel);
-    color: #fff;
-    border: none;
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    white-space: nowrap;
-  }
-
-  .next-ep-btn:hover { background: var(--gold); }
-  .next-ep-btn svg { width: 14px; height: 14px; fill: #fff; }
-
-  /* RESET BUTTON */
-  .reset-link {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 0.78rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: color 0.2s, border-color 0.2s;
-  }
-
-  .reset-link:hover { color: #c0392b; border-color: #c0392b; }
-
-  /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--espresso);
-    color: var(--gold);
-    border: 1px solid var(--caramel);
-    padding: 0.65rem 1.4rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    z-index: 9999;
-    pointer-events: none;
-  }
-
-  #toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .player-container { width: 100vw; border-radius: 0; }
-    .episodes-grid { grid-template-columns: 1fr 1fr; }
-    main { padding: 1.5rem 1rem 3rem; }
-    .volume-wrap { display: none; }
-  }
-
-  @media (max-width: 400px) {
-    .episodes-grid { grid-template-columns: 1fr; }
-  }
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════════════════ */
+:root {
+  --ink:       #08080f;
+  --deep:      #0e0e1a;
+  --surface:   #13131f;
+  --raised:    #1c1c2e;
+  --line:      rgba(255,255,255,0.06);
+  --line2:     rgba(255,255,255,0.1);
+  --amber:     #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --text:      #ede9e0;
+  --text2:     #8a8595;
+  --text3:     #4a4660;
+  --green:     #00e57a;
+  --r:         12px;
+  --r-lg:      18px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Film grain */
+body::before {
+  content:''; position:fixed; inset:0; z-index:9998; pointer-events:none; opacity:0.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--raised);border-radius:10px}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════ */
+header {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  height:62px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 2.5rem;
+  background:linear-gradient(to bottom,rgba(8,8,15,0.98) 0%,rgba(8,8,15,0) 100%);
+  transition:background 0.3s;
+}
+header.solid { background:rgba(8,8,15,0.97); border-bottom:1px solid var(--line); backdrop-filter:blur(20px); }
+
+.logo {
+  font-family:'Cormorant Garamond',serif; font-size:1.45rem; font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--amber);
+  text-shadow:0 0 40px rgba(240,165,0,0.5); cursor:default; user-select:none;
+}
+.logo sup {
+  font-family:'Syne',sans-serif; font-size:0.45rem; font-weight:700;
+  letter-spacing:0.2em; color:var(--text2); vertical-align:super; margin-left:4px; text-transform:uppercase;
+}
+
+.header-right { display:flex; align-items:center; gap:0.8rem; }
+.stat-chip {
+  display:flex; align-items:center; gap:0.45rem;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:100px; padding:0.3rem 0.9rem;
+  font-size:0.7rem; font-weight:600; color:var(--text2); letter-spacing:0.04em;
+}
+.stat-chip .dot {
+  width:5px; height:5px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 8px var(--green); animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.hdr-btn {
+  background:transparent; border:1px solid var(--line2); color:var(--text2);
+  font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.06em;
+  padding:0.3rem 0.85rem; border-radius:8px; cursor:pointer; transition:all 0.18s;
+}
+.hdr-btn:hover { color:#e05050; border-color:rgba(224,80,80,0.4); background:rgba(224,80,80,0.06); }
+
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+#hero {
+  display:none; padding:110px 2.5rem 0; position:relative; overflow:hidden;
+  animation:heroIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#hero::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 60% 100% at 0% 100%,rgba(240,165,0,0.06) 0%,transparent 70%);
+}
+.hero-inner {
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:1fr auto; align-items:end; gap:2rem; padding-bottom:2.5rem;
+  border-bottom:1px solid var(--line);
+}
+.hero-eyebrow { display:flex; align-items:center; gap:0.7rem; margin-bottom:0.9rem; }
+.hero-eyebrow span { font-size:0.62rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--amber); }
+.eyebrow-line { flex:0 0 28px; height:1px; background:var(--amber); opacity:0.5; }
+.hero-title {
+  font-family:'Cormorant Garamond',serif; font-size:clamp(1.6rem,3.5vw,2.8rem);
+  font-weight:600; line-height:1.1; color:#fff; margin-bottom:0.55rem; letter-spacing:-0.01em;
+}
+.hero-meta { font-size:0.78rem; color:var(--text2); font-weight:400; }
+.hero-actions { display:flex; gap:0.6rem; align-items:center; padding-bottom:0.2rem; }
+.btn-hero-primary {
+  display:flex; align-items:center; gap:0.5rem;
+  background:var(--amber); color:#000; border:none; border-radius:10px;
+  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; letter-spacing:0.04em;
+  padding:0.65rem 1.4rem; cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.btn-hero-primary:hover { background:#ffc840; transform:translateY(-1px); box-shadow:0 8px 24px rgba(240,165,0,0.3); }
+.btn-hero-primary svg { width:14px; height:14px; fill:currentColor; }
+.btn-hero-ghost {
+  display:flex; align-items:center; gap:0.5rem;
+  background:rgba(255,255,255,0.07); color:var(--text); border:1px solid var(--line2); border-radius:10px;
+  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600;
+  padding:0.65rem 1.2rem; cursor:pointer; transition:all 0.2s;
+}
+.btn-hero-ghost:hover { background:rgba(255,255,255,0.11); }
+
+/* ═══════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════ */
+main { max-width:1280px; margin:0 auto; padding:0 2.5rem 6rem; }
+.top-spacer { height:62px; }
+#hero-spacer { height:62px; }
+
+/* ═══════════════════════════════════════════════
+   TOOLBAR
+═══════════════════════════════════════════════ */
+.toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:1rem; padding:2rem 0 1.6rem;
+}
+.seasons-scroll { display:flex; gap:0.25rem; flex-wrap:wrap; }
+.s-tab {
+  background:transparent; border:1px solid var(--line); color:var(--text3);
+  font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.08em;
+  padding:0.32rem 0.85rem; border-radius:100px; cursor:pointer; transition:all 0.18s; text-transform:uppercase;
+}
+.s-tab:hover { border-color:rgba(240,165,0,0.3); color:var(--amber); }
+.s-tab.active { background:var(--amber); border-color:var(--amber); color:#000; font-weight:800; box-shadow:0 0 20px rgba(240,165,0,0.25); }
+
+.toolbar-right { display:flex; align-items:center; gap:0.6rem; }
+.btn-random {
+  display:flex; align-items:center; gap:0.5rem;
+  background:var(--raised); border:1px solid rgba(139,92,246,0.3); color:#c4b5fd;
+  font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.08em;
+  padding:0.4rem 1rem; border-radius:100px; cursor:pointer;
+  transition:all 0.2s; text-transform:uppercase; white-space:nowrap;
+  box-shadow:0 0 20px rgba(139,92,246,0.1);
+}
+.btn-random:hover { background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.5); transform:translateY(-1px); box-shadow:0 4px 20px rgba(139,92,246,0.2); }
+.btn-random svg { width:13px; height:13px; fill:currentColor; }
+.btn-random.spinning svg { animation:spin 0.5s ease; }
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════════════ */
+.section-hd { display:flex; align-items:baseline; gap:0.8rem; margin-bottom:1.4rem; }
+.section-hd h2 {
+  font-family:'Cormorant Garamond',serif; font-size:1.7rem; font-weight:600;
+  color:#fff; letter-spacing:-0.01em;
+}
+.section-hd span { font-size:0.72rem; color:var(--text3); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; }
+
+/* ═══════════════════════════════════════════════
+   EPISODE GRID
+═══════════════════════════════════════════════ */
+.ep-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem;
+}
+.ep-card {
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
+  overflow:hidden; position:relative; cursor:pointer;
+  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.2s, box-shadow 0.25s;
+  transform-origin:center bottom;
+}
+.ep-card:hover {
+  transform:translateY(-6px) scale(1.02);
+  border-color:rgba(240,165,0,0.25);
+  box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(240,165,0,0.1);
+}
+.ep-card.ep-watched { opacity:0.45; }
+.ep-card.ep-watched:hover { opacity:0.85; }
+.ep-card.ep-current { border-color:var(--amber); box-shadow:0 0 0 2px rgba(240,165,0,0.2),0 12px 32px rgba(0,0,0,0.4); }
+
+/* Thumbnail */
+.ep-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--deep); overflow:hidden; }
+.thumb-glow { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 60%,rgba(240,165,0,0.07) 0%,transparent 65%); }
+.thumb-number {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Cormorant Garamond',serif; font-size:4rem; font-weight:600; font-style:italic;
+  color:rgba(255,255,255,0.03); user-select:none; letter-spacing:-0.02em;
+}
+.thumb-hover {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0); transition:background 0.2s; z-index:2;
+}
+.ep-card:hover .thumb-hover { background:rgba(0,0,0,0.4); }
+.play-ring {
+  width:48px; height:48px; background:rgba(240,165,0,0.95); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(0.7) rotate(-15deg);
+  transition:opacity 0.22s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 8px 28px rgba(240,165,0,0.5);
+}
+.ep-card:hover .play-ring { opacity:1; transform:scale(1) rotate(0deg); }
+.play-ring svg { width:18px; height:18px; fill:#000; margin-left:3px; }
+
+.card-prog { position:absolute; bottom:0; left:0; right:0; height:2px; background:rgba(255,255,255,0.06); z-index:3; }
+.card-prog-fill { height:100%; background:var(--amber); }
+
+.badge {
+  position:absolute; z-index:4;
+  font-family:'Syne',sans-serif; font-size:0.55rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; padding:0.2rem 0.55rem; border-radius:6px;
+}
+.bdg-watched { top:8px; right:8px; background:rgba(0,229,122,0.12); color:var(--green); border:1px solid rgba(0,229,122,0.25); }
+.bdg-progress { top:8px; left:8px; background:rgba(240,165,0,0.15); color:var(--amber); border:1px solid rgba(240,165,0,0.3); }
+
+.ep-info { padding:0.85rem 1rem 1rem; }
+.ep-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem; }
+.ep-num { font-size:0.62rem; font-weight:800; color:var(--amber); letter-spacing:0.1em; text-transform:uppercase; }
+.ep-dur { font-size:0.62rem; color:var(--text3); font-weight:600; }
+.ep-name { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:600; color:var(--text); line-height:1.38; }
+
+/* ═══════════════════════════════════════════════
+   PLAYER MODAL
+═══════════════════════════════════════════════ */
+#overlay {
+  display:none; position:fixed; inset:0; z-index:900;
+  align-items:center; justify-content:center;
+}
+#overlay.open {
+  display:flex;
+  background:rgba(0,0,0,0.9);
+  backdrop-filter:blur(18px) saturate(0.5);
+  animation:overlayIn 0.3s ease both;
+}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+
+.player-shell {
+  width:92vw; max-width:1060px;
+  background:var(--deep); border:1px solid var(--line2); border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 60px 120px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  animation:shellIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes shellIn{from{transform:scale(0.92) translateY(24px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+
+/* Player header */
+.player-top {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.4rem; border-bottom:1px solid var(--line); gap:1.2rem;
+}
+.player-info { min-width:0; flex:1; }
+.player-tag { font-size:0.6rem; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:var(--amber); margin-bottom:0.22rem; }
+.player-title {
+  font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:0.01em;
+}
+.player-acts { display:flex; align-items:center; gap:0.4rem; flex-shrink:0; }
+.p-icon-btn {
+  width:34px; height:34px; border-radius:9px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line); color:var(--text2);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s;
+}
+.p-icon-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.p-icon-btn svg { width:15px; height:15px; fill:currentColor; }
+
+/* Video */
+.video-box { position:relative; aspect-ratio:16/9; background:#000; overflow:hidden; }
+#vid-iframe { display:none; width:100%; height:100%; border:none; }
+#vid-ph {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:0.8rem;
+  background:radial-gradient(ellipse at center,#12122a 0%,#08080f 100%);
+}
+.ph-icon { font-size:3.2rem; opacity:0.25; }
+#ph-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; color:rgba(255,255,255,0.2); }
+#vid-ph small { font-size:0.68rem; color:rgba(255,255,255,0.1); letter-spacing:0.05em; }
+
+/* Loading spinner */
+.vid-loader {
+  position:absolute; inset:0; z-index:10;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(8,8,15,0.75); transition:opacity 0.5s;
+}
+.vid-loader.hide { opacity:0; pointer-events:none; }
+.load-ring {
+  width:42px; height:42px; border:2px solid rgba(240,165,0,0.12);
+  border-top-color:var(--amber); border-radius:50%;
+  animation:loadSpin 0.8s linear infinite;
+}
+@keyframes loadSpin{to{transform:rotate(360deg)}}
+
+/* Controls */
+.controls {
+  padding:0.9rem 1.4rem 1.1rem;
+  background:linear-gradient(to bottom,#0b0b17,#0e0e1a);
+  border-top:1px solid var(--line);
+}
+.seek-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.7rem; }
+.t { font-size:0.68rem; color:var(--text3); font-variant-numeric:tabular-nums; min-width:36px; font-weight:600; }
+.t.r { text-align:right; }
+.seekbar {
+  flex:1; height:3px; background:rgba(255,255,255,0.08); border-radius:10px;
+  cursor:pointer; position:relative; transition:height 0.15s;
+}
+.seekbar:hover { height:5px; }
+.seekbar::before { content:''; position:absolute; inset:-8px 0; }
+.seek-fill {
+  height:100%; background:var(--amber); border-radius:10px;
+  position:relative; pointer-events:none;
+}
+.seek-fill::after {
+  content:''; position:absolute; right:-4px; top:50%;
+  transform:translateY(-50%) scale(0); width:12px; height:12px;
+  background:var(--amber); border-radius:50%; transition:transform 0.15s;
+  box-shadow:0 0 12px rgba(240,165,0,0.6);
+}
+.seekbar:hover .seek-fill::after { transform:translateY(-50%) scale(1); }
+
+.ctrl-row { display:flex; align-items:center; justify-content:space-between; }
+.ctrl-l, .ctrl-r { display:flex; align-items:center; gap:0.2rem; }
+.c-btn {
+  background:transparent; border:none; color:rgba(255,255,255,0.45);
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:color 0.15s,background 0.15s;
+}
+.c-btn:hover { color:#fff; background:rgba(255,255,255,0.06); }
+.c-btn svg { width:20px; height:20px; fill:currentColor; }
+.c-btn.big { color:#fff; }
+.c-btn.big svg { width:26px; height:26px; }
+
+.vol-wrap { display:flex; align-items:center; gap:0.35rem; }
+.vol-track { width:64px; height:3px; background:rgba(255,255,255,0.08); border-radius:10px; cursor:pointer; overflow:hidden; }
+.vol-fill { height:100%; width:80%; background:rgba(255,255,255,0.3); border-radius:10px; pointer-events:none; }
+
+.btn-next-ep {
+  display:flex; align-items:center; gap:0.4rem;
+  background:rgba(240,165,0,0.08); border:1px solid rgba(240,165,0,0.2); color:var(--amber);
+  border-radius:10px; font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:800;
+  letter-spacing:0.06em; text-transform:uppercase; padding:0.42rem 0.95rem;
+  cursor:pointer; transition:all 0.18s; white-space:nowrap;
+}
+.btn-next-ep:hover { background:rgba(240,165,0,0.15); border-color:rgba(240,165,0,0.4); transform:translateX(2px); }
+.btn-next-ep svg { width:13px; height:13px; fill:currentColor; }
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+#toast {
+  position:fixed; bottom:2.2rem; left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--surface); border:1px solid rgba(240,165,0,0.2); color:var(--text);
+  padding:0.6rem 1.4rem; border-radius:100px; font-size:0.78rem; font-weight:600;
+  letter-spacing:0.02em; opacity:0;
+  transition:opacity 0.25s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  z-index:9999; pointer-events:none; box-shadow:0 12px 40px rgba(0,0,0,0.5); white-space:nowrap;
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:700px){
+  header{padding:0 1.2rem}
+  #hero{padding:90px 1.2rem 0}
+  main{padding:0 1.2rem 5rem}
+  .player-shell{width:100vw;border-radius:0}
+  .ep-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:0.75rem}
+  .vol-wrap{display:none}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Central Perk <span>Streaming</span></div>
+<header id="hdr">
+  <div class="logo">Friends<sup>Stream</sup></div>
   <div class="header-right">
-    <div class="progress-pill" id="overall-progress">Loading…</div>
-    <button class="reset-link" onclick="resetProgress()">Reset</button>
+    <div class="stat-chip"><span class="dot"></span><span id="watch-stat">Loading…</span></div>
+    <button class="hdr-btn" onclick="resetProgress()">Reset</button>
   </div>
 </header>
 
-<!-- RESUME BANNER -->
-<div id="resume-banner">
-  <h2 id="resume-title">Continue Watching</h2>
-  <p id="resume-subtitle">Pick up where you left off</p>
-  <button class="btn-resume" onclick="resumeWatching()">
-    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-    Resume
-  </button>
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span id="hero-eyebrow">Continue Watching</span>
+      </div>
+      <div class="hero-title" id="hero-title">Episode Title</div>
+      <div class="hero-meta"  id="hero-meta">Season 1 · Episode 1</div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="resumeWatching()">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Resume
+      </button>
+      <button class="btn-hero-ghost" onclick="dismissHero()">Dismiss</button>
+    </div>
+  </div>
 </div>
+<div id="hero-spacer"></div>
 
 <main>
-  <div class="seasons-nav" id="seasons-nav"></div>
-  <div class="section-header">
-    <h1 id="season-title">Season 1</h1>
-    <span class="ep-count" id="ep-count"></span>
+  <div class="top-spacer"></div>
+  <div class="toolbar">
+    <div class="seasons-scroll" id="seasons-nav"></div>
+    <div class="toolbar-right">
+      <button class="btn-random" id="random-btn" onclick="playRandom()">
+        <svg viewBox="0 0 24 24"><path d="M17 17h2v2l3-3-3-3v2h-2v2zm-2-12h2v2h-4l-1.41 1.41L10.18 7H3v2h6.41l7 7H21v2h2v-2l-3-3 3-3V7h-8.41L12 5.59zM3 17h6.41l1.41-1.41L9.41 14H3v3z"/></svg>
+        Surprise Me
+      </button>
+    </div>
   </div>
-  <div class="episodes-grid" id="episodes-grid"></div>
+  <div class="section-hd">
+    <h2 id="season-label">Season 1</h2>
+    <span id="ep-count-label"></span>
+  </div>
+  <div class="ep-grid" id="ep-grid"></div>
 </main>
 
-<!-- VIDEO PLAYER MODAL -->
-<div id="player-overlay">
-  <div class="player-container">
-    <div class="player-header">
-      <div class="player-ep-info">
-        <div class="player-ep-label" id="player-ep-label">S1 E1</div>
-        <div class="player-ep-title" id="player-ep-title">The One Where Monica Gets a Roommate</div>
+<!-- PLAYER -->
+<div id="overlay">
+  <div class="player-shell">
+    <div class="player-top">
+      <div class="player-info">
+        <div class="player-tag"   id="p-tag">S1 · E1</div>
+        <div class="player-title" id="p-title">Episode Title</div>
       </div>
-      <button class="btn-close" onclick="closePlayer()">✕</button>
+      <div class="player-acts">
+        <button class="p-icon-btn" onclick="skipToNext()" title="Next episode (N)">
+          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 6 4.5V7.5l-6 4.5zM16 6h2v12h-2z"/></svg>
+        </button>
+        <button class="p-icon-btn" onclick="closePlayer()" title="Close (Esc)">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
     </div>
 
-    <div class="video-wrap">
-      <!-- Google Drive iframe player (shown when src is a Drive link) -->
-      <iframe id="drive-player"
-        style="display:none;width:100%;height:100%;border:none;"
+    <div class="video-box">
+      <iframe id="vid-iframe"
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen
-        allow="autoplay"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox">
+        referrerpolicy="no-referrer">
       </iframe>
-      <!-- Placeholder for episodes without a video source -->
-      <div class="video-placeholder" id="video-placeholder">
-        <div class="big-icon">📺</div>
-        <p id="placeholder-title">The One Where Monica Gets a Roommate</p>
-        <small>No video source added for this episode yet</small>
+      <div id="vid-ph">
+        <div class="ph-icon">📺</div>
+        <div id="ph-title">Select an episode to watch</div>
+        <small>All 10 seasons available</small>
+      </div>
+      <div class="vid-loader hide" id="vid-loader">
+        <div class="load-ring"></div>
       </div>
     </div>
 
     <div class="controls">
-      <div class="progress-row">
-        <span class="time-label" id="time-current">0:00</span>
-        <div class="seek-bar" id="seek-bar" onclick="seekTo(event)">
+      <div class="seek-row">
+        <span class="t"   id="t-now">0:00</span>
+        <div  class="seekbar" id="seekbar" onclick="onSeek(event)">
           <div class="seek-fill" id="seek-fill" style="width:0%"></div>
         </div>
-        <span class="time-label" id="time-total">22:00</span>
+        <span class="t r" id="t-end">22:00</span>
       </div>
-      <div class="controls-row">
-        <div class="controls-left">
-          <button class="ctrl-btn" onclick="skipBack()">
-            <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      <div class="ctrl-row">
+        <div class="ctrl-l">
+          <button class="c-btn" onclick="skip(-10)" title="Back 10s">
+            <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
           </button>
-          <button class="ctrl-btn play-pause" id="play-pause-btn" onclick="togglePlay()">
-            <svg viewBox="0 0 24 24" id="play-icon"><path d="M8 5v14l11-7z"/></svg>
+          <button class="c-btn big" id="pp-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24" id="pp-icon"><path d="M8 5v14l11-7z"/></svg>
           </button>
-          <button class="ctrl-btn" onclick="skipForward()">
-            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-6 8.5 6V6z"/></svg>
+          <button class="c-btn" onclick="skip(30)" title="Forward 30s">
+            <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
           </button>
-          <div class="volume-wrap">
-            <button class="ctrl-btn" onclick="toggleMute()">
-              <svg viewBox="0 0 24 24" id="vol-icon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <div class="vol-wrap">
+            <button class="c-btn" onclick="toggleMute()">
+              <svg viewBox="0 0 24 24" id="vol-ico"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
             </button>
-            <div class="volume-slider" onclick="setVolume(event)">
-              <div class="volume-fill" id="volume-fill"></div>
+            <div class="vol-track" onclick="setVol(event)">
+              <div class="vol-fill" id="vol-fill"></div>
             </div>
           </div>
         </div>
-        <div class="controls-right">
-          <button class="next-ep-btn" onclick="playNext()">
-            Next
-            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-6 8.5 6V6z"/></svg>
+        <div class="ctrl-r">
+          <button class="btn-next-ep" onclick="skipToNext()">
+            Next Episode
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           </button>
         </div>
       </div>
@@ -735,679 +516,458 @@
 <div id="toast"></div>
 
 <script>
-// ─── EPISODES DATA ────────────────────────────────────────────────────
-// src: Google Drive embed URL (converted from share links) or direct video URL
-// To convert a Google Drive share link:
-//   Share link:  https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-//   Embed URL:   https://drive.google.com/file/d/FILE_ID/preview
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   EPISODE DATA
+   VidKing URL pattern: https://www.vidking.net/embed/tv/1668/{season}/{episode}
+   Friends TMDB ID = 1668
+   All 236 episodes auto-generated — no manual links needed!
+═══════════════════════════════════════════════════════ */
+const TMDB_ID = 1668;
+const vidURL = (season, episode) => `https://www.vidking.net/embed/tv/${TMDB_ID}/${season}/${episode}`;
+
 const SEASONS = [
-  {
-    season: 1,
-    episodes: [
-      { title: "The One Where Monica Gets a Roommate", duration: 22, src: "https://drive.google.com/file/d/1htNSJJKqgdhNv8Wx_NFT7jv1pE4xN-mYqw/preview" },
-      { title: "The One with the Sonogram at the End", duration: 22, src: "" },
-      { title: "The One with the Thumb", duration: 22, src: "https://drive.google.com/file/d/134QO1_9wsNn3KR0nYt0JcrZ_Urz97Mq_-A/preview" },
-      { title: "The One with George Stephanopoulos", duration: 22, src: "" },
-      { title: "The One with the East German Laundry Detergent", duration: 22, src: "https://drive.google.com/file/d/1xZHgYaKqB4HD6Tv8IHXr0pB3cAxMaDpx-A/preview" },
-      { title: "The One with the Butt", duration: 22, src: "" },
-      { title: "The One with the Blackout", duration: 22, src: "https://drive.google.com/file/d/1QLwH-mB015uCCC5Gv4k-FIBD69pw3vudmg/preview" },
-      { title: "The One Where Nana Dies Twice", duration: 22, src: "" },
-      { title: "The One Where Underdog Gets Away", duration: 22, src: "https://drive.google.com/file/d/1iPwJWGRWIxIm2jyM7nxakPgYshxsieeuVA/preview" },
-      { title: "The One with the Monkey", duration: 22, src: "" },
-      { title: "The One with Mrs. Bing", duration: 22, src: "https://drive.google.com/file/d/1vDrn1g0BDaZvqAYfUMuSDpwu8874MsSsrA/preview" },
-      { title: "The One with the Dozen Lasagnas", duration: 22, src: "" },
-      { title: "The One with the Boobies", duration: 22, src: "https://drive.google.com/file/d/1xonAf5kEW2_EnKZGcu0IZaFpGOVIYBc4sw/preview" },
-      { title: "The One with the Candy Hearts", duration: 22, src: "" },
-      { title: "The One with the Stoned Guy", duration: 22, src: "https://drive.google.com/file/d/1TN1CIw1zMNxMu_EaMn289Cult_kqKn6fYA/preview" },
-      { title: "The One with Two Parts: Part 1", duration: 22, src: "" },
-      { title: "The One with Two Parts: Part 2", duration: 22, src: "https://drive.google.com/file/d/1oMv-z5dt1mQs1A3p1DyuuDeyEReEWWBp-A/preview" },
-      { title: "The One with All the Poker", duration: 22, src: "" },
-      { title: "The One Where the Monkey Gets Away", duration: 22, src: "https://drive.google.com/file/d/1MXRGR-egDZCBj_wwiHYdJCLmvlYzZAVCYg/preview" },
-      { title: "The One with the Evil Orthodontist", duration: 22, src: "" },
-      { title: "The One with the Fake Monica", duration: 22, src: "https://drive.google.com/file/d/1OvFsyQKPs0UOMUjrCfgFZUPTPHJaBbuR9Q/preview" },
-      { title: "The One with the Ick Factor", duration: 22, src: "" },
-      { title: "The One with the Birth", duration: 22, src: "https://drive.google.com/file/d/14X3TQqzcIxTd8NfBTDw2fAlKlnqqELP3XA/preview" },
-      { title: "The One Where Rachel Finds Out", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 2,
-    episodes: [
-      { title: "The One with Ross's New Girlfriend", duration: 22, src: "" },
-      { title: "The One with the Breast Milk", duration: 22, src: "" },
-      { title: "The One Where Heckles Dies", duration: 22, src: "" },
-      { title: "The One with Phoebe's Husband", duration: 22, src: "" },
-      { title: "The One with Five Steaks and an Eggplant", duration: 22, src: "" },
-      { title: "The One with the Baby on the Bus", duration: 22, src: "" },
-      { title: "The One Where Ross Finds Out", duration: 22, src: "" },
-      { title: "The One with the List", duration: 22, src: "" },
-      { title: "The One with Phoebe's Dad", duration: 22, src: "" },
-      { title: "The One with Russ", duration: 22, src: "" },
-      { title: "The One with the Lesbian Wedding", duration: 22, src: "" },
-      { title: "The One After the Superbowl: Part 1", duration: 22, src: "" },
-      { title: "The One After the Superbowl: Part 2", duration: 22, src: "" },
-      { title: "The One with the Prom Video", duration: 22, src: "" },
-      { title: "The One Where Ross and Rachel You Know", duration: 22, src: "" },
-      { title: "The One Where Joey Moves Out", duration: 22, src: "" },
-      { title: "The One Where Eddie Moves In", duration: 22, src: "" },
-      { title: "The One Where Dr. Ramoray Dies", duration: 22, src: "" },
-      { title: "The One Where Eddie Won't Go", duration: 22, src: "" },
-      { title: "The One Where Old Yeller Dies", duration: 22, src: "" },
-      { title: "The One with the Bullies", duration: 22, src: "" },
-      { title: "The One with the Two Parties", duration: 22, src: "" },
-      { title: "The One with the Chicken Pox", duration: 22, src: "" },
-      { title: "The One with Barry and Mindy's Wedding", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 3,
-    episodes: [
-      { title: "The One with the Princess Leia Fantasy", duration: 22, src: "" },
-      { title: "The One Where No One's Ready", duration: 22, src: "" },
-      { title: "The One with the Jam", duration: 22, src: "" },
-      { title: "The One with the Metaphorical Tunnel", duration: 22, src: "" },
-      { title: "The One with Frank Jr.", duration: 22, src: "" },
-      { title: "The One with the Flashback", duration: 22, src: "" },
-      { title: "The One with the Race Car Bed", duration: 22, src: "" },
-      { title: "The One with the Giant Poking Device", duration: 22, src: "" },
-      { title: "The One with the Football", duration: 22, src: "" },
-      { title: "The One Where Rachel Quits", duration: 22, src: "" },
-      { title: "The One Where Chandler Can't Remember Which Sister", duration: 22, src: "" },
-      { title: "The One with All the Jealousy", duration: 22, src: "" },
-      { title: "The One Where Monica and Richard Are Just Friends", duration: 22, src: "" },
-      { title: "The One with Phoebe's Ex-Partner", duration: 22, src: "" },
-      { title: "The One Where Ross and Rachel Take a Break", duration: 22, src: "" },
-      { title: "The One the Morning After", duration: 22, src: "" },
-      { title: "The One Without the Ski Trip", duration: 22, src: "" },
-      { title: "The One with the Hypnosis Tape", duration: 22, src: "" },
-      { title: "The One with the Tiny T-Shirt", duration: 22, src: "" },
-      { title: "The One with the Dollhouse", duration: 22, src: "" },
-      { title: "The One with a Chick and a Duck", duration: 22, src: "" },
-      { title: "The One with the Screamer", duration: 22, src: "" },
-      { title: "The One with Ross's Thing", duration: 22, src: "" },
-      { title: "The One with the Ultimate Fighting Champion", duration: 22, src: "" },
-      { title: "The One at the Beach", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 4,
-    episodes: [
-      { title: "The One with the Jellyfish", duration: 22, src: "" },
-      { title: "The One with the Cat", duration: 22, src: "" },
-      { title: "The One with the 'Cuffs", duration: 22, src: "" },
-      { title: "The One with the Ballroom Dancing", duration: 22, src: "" },
-      { title: "The One with Joey's New Girlfriend", duration: 22, src: "" },
-      { title: "The One with the Dirty Girl", duration: 22, src: "" },
-      { title: "The One Where Chandler Crosses the Line", duration: 22, src: "" },
-      { title: "The One with Chandler in a Box", duration: 22, src: "" },
-      { title: "The One Where They're Going to Party!", duration: 22, src: "" },
-      { title: "The One with the Girl from Poughkeepsie", duration: 22, src: "" },
-      { title: "The One with Phoebe's Uterus", duration: 22, src: "" },
-      { title: "The One with the Embryos", duration: 22, src: "" },
-      { title: "The One with Rachel's Crush", duration: 22, src: "" },
-      { title: "The One with Joey's Dirty Day", duration: 22, src: "" },
-      { title: "The One with All the Rugby", duration: 22, src: "" },
-      { title: "The One with the Fake Party", duration: 22, src: "" },
-      { title: "The One with the Free Porn", duration: 22, src: "" },
-      { title: "The One with Rachel's New Dress", duration: 22, src: "" },
-      { title: "The One with All the Haste", duration: 22, src: "" },
-      { title: "The One with All the Wedding Dresses", duration: 22, src: "" },
-      { title: "The One with the Invitation", duration: 22, src: "" },
-      { title: "The One with the Worst Best Man Ever", duration: 22, src: "" },
-      { title: "The One with Ross's Wedding: Part 1", duration: 22, src: "" },
-      { title: "The One with Ross's Wedding: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 5,
-    episodes: [
-      { title: "The One After Ross Says Rachel", duration: 22, src: "" },
-      { title: "The One with All the Kissing", duration: 22, src: "" },
-      { title: "The One Hundredth", duration: 22, src: "" },
-      { title: "The One Where Phoebe Hates PBS", duration: 22, src: "" },
-      { title: "The One with the Kips", duration: 22, src: "" },
-      { title: "The One with the Yeti", duration: 22, src: "" },
-      { title: "The One Where Ross Moves In", duration: 22, src: "" },
-      { title: "The One with All the Thanksgivings", duration: 22, src: "" },
-      { title: "The One with Ross's Sandwich", duration: 22, src: "" },
-      { title: "The One with the Inappropriate Sister", duration: 22, src: "" },
-      { title: "The One with All the Resolutions", duration: 22, src: "" },
-      { title: "The One with Chandler's Work Laugh", duration: 22, src: "" },
-      { title: "The One with Joey's Bag", duration: 22, src: "" },
-      { title: "The One Where Everybody Finds Out", duration: 22, src: "" },
-      { title: "The One with the Girl Who Hits Joey", duration: 22, src: "" },
-      { title: "The One with the Cop", duration: 22, src: "" },
-      { title: "The One with Rachel's Inadvertent Kiss", duration: 22, src: "" },
-      { title: "The One Where Rachel Smokes", duration: 22, src: "" },
-      { title: "The One Where Ross Can't Flirt", duration: 22, src: "" },
-      { title: "The One with the Ride-Along", duration: 22, src: "" },
-      { title: "The One with the Ball", duration: 22, src: "" },
-      { title: "The One with Joey's Big Break", duration: 22, src: "" },
-      { title: "The One in Vegas: Part 1", duration: 22, src: "" },
-      { title: "The One in Vegas: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 6,
-    episodes: [
-      { title: "The One After Vegas", duration: 22, src: "" },
-      { title: "The One Where Ross Hugs Rachel", duration: 22, src: "" },
-      { title: "The One with Ross's Denial", duration: 22, src: "" },
-      { title: "The One Where Joey Loses His Insurance", duration: 22, src: "" },
-      { title: "The One with Joey's Porsche", duration: 22, src: "" },
-      { title: "The One on the Last Night", duration: 22, src: "" },
-      { title: "The One Where Phoebe Runs", duration: 22, src: "" },
-      { title: "The One with Ross's Teeth", duration: 22, src: "" },
-      { title: "The One Where Ross Got High", duration: 22, src: "" },
-      { title: "The One with the Routine", duration: 22, src: "" },
-      { title: "The One with the Apothecary Table", duration: 22, src: "" },
-      { title: "The One with the Joke", duration: 22, src: "" },
-      { title: "The One with Rachel's Sister", duration: 22, src: "" },
-      { title: "The One Where Chandler Can't Cry", duration: 22, src: "" },
-      { title: "The One That Could Have Been: Part 1", duration: 22, src: "" },
-      { title: "The One That Could Have Been: Part 2", duration: 22, src: "" },
-      { title: "The One with Unagi", duration: 22, src: "" },
-      { title: "The One Where Ross Dates a Student", duration: 22, src: "" },
-      { title: "The One with Joey's Fridge", duration: 22, src: "" },
-      { title: "The One with Mac and C.H.E.E.S.E.", duration: 22, src: "" },
-      { title: "The One Where Ross Meets Elizabeth's Dad", duration: 22, src: "" },
-      { title: "The One Where Paul's the Man", duration: 22, src: "" },
-      { title: "The One with the Ring", duration: 22, src: "" },
-      { title: "The One with the Proposal: Part 1", duration: 22, src: "" },
-      { title: "The One with the Proposal: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 7,
-    episodes: [
-      { title: "The One with Monica's Thunder", duration: 22, src: "" },
-      { title: "The One with Rachel's Book", duration: 22, src: "" },
-      { title: "The One with Phoebe's Cookies", duration: 22, src: "" },
-      { title: "The One with Rachel's Assistant", duration: 22, src: "" },
-      { title: "The One with the Engagement Picture", duration: 22, src: "" },
-      { title: "The One with the Nap Partners", duration: 22, src: "" },
-      { title: "The One with Ross's Library Book", duration: 22, src: "" },
-      { title: "The One Where Chandler Doesn't Like Dogs", duration: 22, src: "" },
-      { title: "The One with All the Candy", duration: 22, src: "" },
-      { title: "The One with the Holiday Armadillo", duration: 22, src: "" },
-      { title: "The One with All the Cheesecakes", duration: 22, src: "" },
-      { title: "The One Where They're Up All Night", duration: 22, src: "" },
-      { title: "The One Where Rosita Dies", duration: 22, src: "" },
-      { title: "The One Where They All Turn Thirty", duration: 22, src: "" },
-      { title: "The One with Joey's New Brain", duration: 22, src: "" },
-      { title: "The One with the Truth About London", duration: 22, src: "" },
-      { title: "The One with the Cheap Wedding Dress", duration: 22, src: "" },
-      { title: "The One with Joey's Award", duration: 22, src: "" },
-      { title: "The One with Ross and Monica's Cousin", duration: 22, src: "" },
-      { title: "The One with Rachel's Big Kiss", duration: 22, src: "" },
-      { title: "The One with the Vows", duration: 22, src: "" },
-      { title: "The One with Chandler's Dad", duration: 22, src: "" },
-      { title: "The One with Monica and Chandler's Wedding: Part 1", duration: 22, src: "" },
-      { title: "The One with Monica and Chandler's Wedding: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 8,
-    episodes: [
-      { title: "The One After 'I Do'", duration: 22, src: "" },
-      { title: "The One with the Red Sweater", duration: 22, src: "" },
-      { title: "The One Where Rachel Tells...", duration: 22, src: "" },
-      { title: "The One with the Videotape", duration: 22, src: "" },
-      { title: "The One with Rachel's Date", duration: 22, src: "" },
-      { title: "The One with the Halloween Party", duration: 22, src: "" },
-      { title: "The One with the Stain", duration: 22, src: "" },
-      { title: "The One with the Stripper", duration: 22, src: "" },
-      { title: "The One with the Rumor", duration: 22, src: "" },
-      { title: "The One with Monica's Boots", duration: 22, src: "" },
-      { title: "The One with Ross's Step Forward", duration: 22, src: "" },
-      { title: "The One Where Joey Dates Rachel", duration: 22, src: "" },
-      { title: "The One Where Chandler Takes a Bath", duration: 22, src: "" },
-      { title: "The One with the Secret Closet", duration: 22, src: "" },
-      { title: "The One with the Birthing Video", duration: 22, src: "" },
-      { title: "The One Where Joey Tells Rachel", duration: 22, src: "" },
-      { title: "The One with the Tea Leaves", duration: 22, src: "" },
-      { title: "The One in Massapequa", duration: 22, src: "" },
-      { title: "The One with Joey's Interview", duration: 22, src: "" },
-      { title: "The One with the Baby Shower", duration: 22, src: "" },
-      { title: "The One with the Cooking Class", duration: 22, src: "" },
-      { title: "The One Where Rachel is Late", duration: 22, src: "" },
-      { title: "The One Where Rachel Has a Baby: Part 1", duration: 22, src: "" },
-      { title: "The One Where Rachel Has a Baby: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 9,
-    episodes: [
-      { title: "The One Where No One Proposes", duration: 22, src: "" },
-      { title: "The One Where Emma Cries", duration: 22, src: "" },
-      { title: "The One with the Pediatrician", duration: 22, src: "" },
-      { title: "The One with the Sharks", duration: 22, src: "" },
-      { title: "The One with Phoebe's Birthday Dinner", duration: 22, src: "" },
-      { title: "The One with the Male Nanny", duration: 22, src: "" },
-      { title: "The One with Ross's Inappropriate Song", duration: 22, src: "" },
-      { title: "The One with Rachel's Other Sister", duration: 22, src: "" },
-      { title: "The One with Christmas in Tulsa", duration: 22, src: "" },
-      { title: "The One Where Monica Sings", duration: 22, src: "" },
-      { title: "The One Where Rachel Goes Back to Work", duration: 22, src: "" },
-      { title: "The One with Phoebe's Rats", duration: 22, src: "" },
-      { title: "The One Where Monica and Chandler...", duration: 22, src: "" },
-      { title: "The One with the Blind Dates", duration: 22, src: "" },
-      { title: "The One with the Mugging", duration: 22, src: "" },
-      { title: "The One with the Boob Job", duration: 22, src: "" },
-      { title: "The One with the Memorial Service", duration: 22, src: "" },
-      { title: "The One with the Lottery", duration: 22, src: "" },
-      { title: "The One with Rachel's Dream", duration: 22, src: "" },
-      { title: "The One with the Soap Opera Party", duration: 22, src: "" },
-      { title: "The One with the Fertility Test", duration: 22, src: "" },
-      { title: "The One with the Donor", duration: 22, src: "" },
-      { title: "The One in Barbados: Part 1", duration: 22, src: "" },
-      { title: "The One in Barbados: Part 2", duration: 22, src: "" },
-    ]
-  },
-  {
-    season: 10,
-    episodes: [
-      { title: "The One After Joey and Rachel Kiss", duration: 22, src: "" },
-      { title: "The One Where Ross Is Fine", duration: 22, src: "" },
-      { title: "The One with Ross's Tan", duration: 22, src: "" },
-      { title: "The One with the Cake", duration: 22, src: "" },
-      { title: "The One Where Rachel's Sister Babysits", duration: 22, src: "" },
-      { title: "The One with Ross's Grant", duration: 22, src: "" },
-      { title: "The One with the Home Study", duration: 22, src: "" },
-      { title: "The One with the Late Thanksgiving", duration: 22, src: "" },
-      { title: "The One with the Birth Mother", duration: 22, src: "" },
-      { title: "The One Where Chandler Gets Caught", duration: 22, src: "" },
-      { title: "The One Where the Stripper Cries", duration: 22, src: "" },
-      { title: "The One with Phoebe's Wedding", duration: 22, src: "" },
-      { title: "The One Where Joey Speaks French", duration: 22, src: "" },
-      { title: "The One with Princess Consuela", duration: 22, src: "" },
-      { title: "The One Where Estelle Dies", duration: 22, src: "" },
-      { title: "The One with Rachel's Going Away Party", duration: 22, src: "" },
-      { title: "The Last One: Part 1", duration: 22, src: "" },
-      { title: "The Last One: Part 2", duration: 22, src: "" },
-    ]
-  },
+  { s:1,  eps:[
+    "The One Where Monica Gets a Roommate","The One with the Sonogram at the End","The One with the Thumb",
+    "The One with George Stephanopoulos","The One with the East German Laundry Detergent","The One with the Butt",
+    "The One with the Blackout","The One Where Nana Dies Twice","The One Where Underdog Gets Away",
+    "The One with the Monkey","The One with Mrs. Bing","The One with the Dozen Lasagnas",
+    "The One with the Boobies","The One with the Candy Hearts","The One with the Stoned Guy",
+    "The One with Two Parts: Part 1","The One with Two Parts: Part 2","The One with All the Poker",
+    "The One Where the Monkey Gets Away","The One with the Evil Orthodontist","The One with the Fake Monica",
+    "The One with the Ick Factor","The One with the Birth","The One Where Rachel Finds Out"
+  ]},
+  { s:2, eps:[
+    "The One with Ross's New Girlfriend","The One with the Breast Milk","The One Where Heckles Dies",
+    "The One with Phoebe's Husband","The One with Five Steaks and an Eggplant","The One with the Baby on the Bus",
+    "The One Where Ross Finds Out","The One with the List","The One with Phoebe's Dad","The One with Russ",
+    "The One with the Lesbian Wedding","The One After the Superbowl: Part 1","The One After the Superbowl: Part 2",
+    "The One with the Prom Video","The One Where Ross and Rachel You Know","The One Where Joey Moves Out",
+    "The One Where Eddie Moves In","The One Where Dr. Ramoray Dies","The One Where Eddie Won't Go",
+    "The One Where Old Yeller Dies","The One with the Bullies","The One with the Two Parties",
+    "The One with the Chicken Pox","The One with Barry and Mindy's Wedding"
+  ]},
+  { s:3, eps:[
+    "The One with the Princess Leia Fantasy","The One Where No One's Ready","The One with the Jam",
+    "The One with the Metaphorical Tunnel","The One with Frank Jr.","The One with the Flashback",
+    "The One with the Race Car Bed","The One with the Giant Poking Device","The One with the Football",
+    "The One Where Rachel Quits","The One Where Chandler Can't Remember Which Sister","The One with All the Jealousy",
+    "The One Where Monica and Richard Are Just Friends","The One with Phoebe's Ex-Partner",
+    "The One Where Ross and Rachel Take a Break","The One the Morning After","The One Without the Ski Trip",
+    "The One with the Hypnosis Tape","The One with the Tiny T-Shirt","The One with the Dollhouse",
+    "The One with a Chick and a Duck","The One with the Screamer","The One with Ross's Thing",
+    "The One with the Ultimate Fighting Champion","The One at the Beach"
+  ]},
+  { s:4, eps:[
+    "The One with the Jellyfish","The One with the Cat","The One with the 'Cuffs","The One with the Ballroom Dancing",
+    "The One with Joey's New Girlfriend","The One with the Dirty Girl","The One Where Chandler Crosses the Line",
+    "The One with Chandler in a Box","The One Where They're Going to Party!","The One with the Girl from Poughkeepsie",
+    "The One with Phoebe's Uterus","The One with the Embryos","The One with Rachel's Crush",
+    "The One with Joey's Dirty Day","The One with All the Rugby","The One with the Fake Party",
+    "The One with the Free Porn","The One with Rachel's New Dress","The One with All the Haste",
+    "The One with All the Wedding Dresses","The One with the Invitation","The One with the Worst Best Man Ever",
+    "The One with Ross's Wedding: Part 1","The One with Ross's Wedding: Part 2"
+  ]},
+  { s:5, eps:[
+    "The One After Ross Says Rachel","The One with All the Kissing","The One Hundredth",
+    "The One Where Phoebe Hates PBS","The One with the Kips","The One with the Yeti",
+    "The One Where Ross Moves In","The One with All the Thanksgivings","The One with Ross's Sandwich",
+    "The One with the Inappropriate Sister","The One with All the Resolutions","The One with Chandler's Work Laugh",
+    "The One with Joey's Bag","The One Where Everybody Finds Out","The One with the Girl Who Hits Joey",
+    "The One with the Cop","The One with Rachel's Inadvertent Kiss","The One Where Rachel Smokes",
+    "The One Where Ross Can't Flirt","The One with the Ride-Along","The One with the Ball",
+    "The One with Joey's Big Break","The One in Vegas: Part 1","The One in Vegas: Part 2"
+  ]},
+  { s:6, eps:[
+    "The One After Vegas","The One Where Ross Hugs Rachel","The One with Ross's Denial",
+    "The One Where Joey Loses His Insurance","The One with Joey's Porsche","The One on the Last Night",
+    "The One Where Phoebe Runs","The One with Ross's Teeth","The One Where Ross Got High",
+    "The One with the Routine","The One with the Apothecary Table","The One with the Joke",
+    "The One with Rachel's Sister","The One Where Chandler Can't Cry","The One That Could Have Been: Part 1",
+    "The One That Could Have Been: Part 2","The One with Unagi","The One Where Ross Dates a Student",
+    "The One with Joey's Fridge","The One with Mac and C.H.E.E.S.E.","The One Where Ross Meets Elizabeth's Dad",
+    "The One Where Paul's the Man","The One with the Ring","The One with the Proposal: Part 1",
+    "The One with the Proposal: Part 2"
+  ]},
+  { s:7, eps:[
+    "The One with Monica's Thunder","The One with Rachel's Book","The One with Phoebe's Cookies",
+    "The One with Rachel's Assistant","The One with the Engagement Picture","The One with the Nap Partners",
+    "The One with Ross's Library Book","The One Where Chandler Doesn't Like Dogs","The One with All the Candy",
+    "The One with the Holiday Armadillo","The One with All the Cheesecakes","The One Where They're Up All Night",
+    "The One Where Rosita Dies","The One Where They All Turn Thirty","The One with Joey's New Brain",
+    "The One with the Truth About London","The One with the Cheap Wedding Dress","The One with Joey's Award",
+    "The One with Ross and Monica's Cousin","The One with Rachel's Big Kiss","The One with the Vows",
+    "The One with Chandler's Dad","The One with Monica and Chandler's Wedding: Part 1",
+    "The One with Monica and Chandler's Wedding: Part 2"
+  ]},
+  { s:8, eps:[
+    "The One After 'I Do'","The One with the Red Sweater","The One Where Rachel Tells...",
+    "The One with the Videotape","The One with Rachel's Date","The One with the Halloween Party",
+    "The One with the Stain","The One with the Stripper","The One with the Rumor","The One with Monica's Boots",
+    "The One with Ross's Step Forward","The One Where Joey Dates Rachel","The One Where Chandler Takes a Bath",
+    "The One with the Secret Closet","The One with the Birthing Video","The One Where Joey Tells Rachel",
+    "The One with the Tea Leaves","The One in Massapequa","The One with Joey's Interview",
+    "The One with the Baby Shower","The One with the Cooking Class","The One Where Rachel is Late",
+    "The One Where Rachel Has a Baby: Part 1","The One Where Rachel Has a Baby: Part 2"
+  ]},
+  { s:9, eps:[
+    "The One Where No One Proposes","The One Where Emma Cries","The One with the Pediatrician",
+    "The One with the Sharks","The One with Phoebe's Birthday Dinner","The One with the Male Nanny",
+    "The One with Ross's Inappropriate Song","The One with Rachel's Other Sister","The One with Christmas in Tulsa",
+    "The One Where Monica Sings","The One Where Rachel Goes Back to Work","The One with Phoebe's Rats",
+    "The One Where Monica and Chandler...","The One with the Blind Dates","The One with the Mugging",
+    "The One with the Boob Job","The One with the Memorial Service","The One with the Lottery",
+    "The One with Rachel's Dream","The One with the Soap Opera Party","The One with the Fertility Test",
+    "The One with the Donor","The One in Barbados: Part 1","The One in Barbados: Part 2"
+  ]},
+  { s:10, eps:[
+    "The One After Joey and Rachel Kiss","The One Where Ross Is Fine","The One with Ross's Tan",
+    "The One with the Cake","The One Where Rachel's Sister Babysits","The One with Ross's Grant",
+    "The One with the Home Study","The One with the Late Thanksgiving","The One with the Birth Mother",
+    "The One Where Chandler Gets Caught","The One Where the Stripper Cries","The One with Phoebe's Wedding",
+    "The One Where Joey Speaks French","The One with Princess Consuela","The One Where Estelle Dies",
+    "The One with Rachel's Going Away Party","The Last One: Part 1","The Last One: Part 2"
+  ]},
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'friends_progress_v2';
-let state = loadState();
-let activeSeason = 0;
-let currentEp = null; // { season, episode }
-let simInterval = null; // fake playback timer
-let isPlaying = false;
-let currentTime = 0;
-let totalTime = 0;
-let isMuted = false;
-let volumeLevel = 0.8;
+// Episode duration per season (minutes)
+const EP_DUR = { 1:22,2:22,3:22,4:22,5:22,6:22,7:22,8:22,9:22,10:22 };
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  // default: all zeros
-  return {
-    lastSeason: 0,
-    lastEpisode: 0,
-    lastTime: 0,
-    episodes: {} // key: "s-e" => { watched: bool, time: seconds }
-  };
-}
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+const SK = 'fstream_v5';
+let ST = (() => { try{ const r=localStorage.getItem(SK); if(r) return JSON.parse(r); }catch(e){} return{lastS:0,lastE:0,eps:{}}; })();
+const persist = () => localStorage.setItem(SK, JSON.stringify(ST));
+const ekey = (s,e) => s+':'+e;
+const getE = (s,e) => ST.eps[ekey(s,e)] || {t:0,w:false};
+const setE = (s,e,d) => { ST.eps[ekey(s,e)]=Object.assign({},getE(s,e),d); persist(); };
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+let curSeason = 0;
+let curEp = null; // {si, ei}
 
-function epKey(s, e) { return `${s}-${e}`; }
+/* Wall-clock playback */
+let playing=false, rafId=null;
+let clock=0, total=0;
+let wallStart=null, clockAtStart=0, lastSave=0;
 
-function getEpState(s, e) {
-  return state.episodes[epKey(s, e)] || { watched: false, time: 0 };
-}
+/* ═══════════════════════════════════════════════════════
+   SCROLL HEADER
+═══════════════════════════════════════════════════════ */
+window.addEventListener('scroll', () => {
+  document.getElementById('hdr').classList.toggle('solid', window.scrollY > 40);
+}, { passive:true });
 
-function setEpState(s, e, data) {
-  state.episodes[epKey(s, e)] = { ...getEpState(s, e), ...data };
-  saveState();
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────
-function buildSeasonNav() {
+/* ═══════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════ */
+function buildNav() {
   const nav = document.getElementById('seasons-nav');
   nav.innerHTML = '';
-  SEASONS.forEach((s, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'season-tab' + (i === activeSeason ? ' active' : '');
-    btn.textContent = `Season ${s.season}`;
-    btn.onclick = () => { activeSeason = i; renderSeason(); };
-    nav.appendChild(btn);
+  SEASONS.forEach((S,i) => {
+    const b = document.createElement('button');
+    b.className = 's-tab' + (i===curSeason?' active':'');
+    b.textContent = 'S'+S.s;
+    b.onclick = () => { curSeason=i; renderSeason(); };
+    nav.appendChild(b);
   });
 }
 
 function renderSeason() {
-  buildSeasonNav();
-  const s = SEASONS[activeSeason];
-  document.getElementById('season-title').textContent = `Season ${s.season}`;
-  document.getElementById('ep-count').textContent = `${s.episodes.length} episodes`;
+  buildNav();
+  const S = SEASONS[curSeason];
+  document.getElementById('season-label').textContent = 'Season '+S.s;
+  document.getElementById('ep-count-label').textContent = S.eps.length+' episodes';
 
-  const grid = document.getElementById('episodes-grid');
+  const grid = document.getElementById('ep-grid');
   grid.innerHTML = '';
 
-  s.episodes.forEach((ep, i) => {
-    const epS = activeSeason;
-    const epE = i;
-    const eps = getEpState(epS, epE);
-    const isCurrentEp = state.lastSeason === epS && state.lastEpisode === epE;
-    const progressPct = eps.time > 0 ? Math.min((eps.time / (ep.duration * 60)) * 100, 100) : 0;
-    const isWatched = eps.watched;
+  S.eps.forEach((title, i) => {
+    const e = getE(curSeason, i);
+    const isCur = ST.lastS===curSeason && ST.lastE===i;
+    const dur = EP_DUR[S.s] * 60;
+    const pct = e.t>0 ? Math.min((e.t/dur)*100,100) : 0;
 
     const card = document.createElement('div');
-    card.className = 'ep-card' + (isWatched ? ' watched' : '') + (isCurrentEp && !isWatched ? ' current' : '');
-    card.onclick = () => openPlayer(epS, epE);
+    card.className = 'ep-card' + (e.w?' ep-watched':'') + (isCur&&!e.w?' ep-current':'');
+    card.onclick = () => openPlayer(curSeason, i);
 
-    card.innerHTML = `
-      <div class="ep-thumb">
-        <div class="thumb-bg">FRIENDS</div>
-        <div class="play-btn">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        ${isWatched ? '<div class="watched-badge">✓ Watched</div>' : ''}
-        ${isCurrentEp && !isWatched && eps.time > 0 ? '<div class="current-badge">▶ In Progress</div>' : ''}
-        ${progressPct > 0 && !isWatched ? `<div class="ep-progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>` : ''}
-        ${ep.src ? '<div class="video-available-dot" title="Video available"></div>' : ''}
-      </div>
-      <div class="ep-info">
-        <div class="ep-meta">
-          <span class="ep-number">S${s.season} E${i + 1}</span>
-          <span class="ep-duration">${ep.duration} min</span>
-        </div>
-        <div class="ep-title">${ep.title}</div>
-      </div>
-    `;
+    card.innerHTML =
+      '<div class="ep-thumb">' +
+        '<div class="thumb-glow"></div>' +
+        '<div class="thumb-number">'+String(i+1).padStart(2,'0')+'</div>' +
+        '<div class="thumb-hover"><div class="play-ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>' +
+        (e.w ? '<div class="badge bdg-watched">✓ Watched</div>' : '') +
+        (isCur&&!e.w&&e.t>0 ? '<div class="badge bdg-progress">▶ Resume</div>' : '') +
+        (pct>0&&!e.w ? '<div class="card-prog"><div class="card-prog-fill" style="width:'+pct+'%"></div></div>' : '') +
+      '</div>' +
+      '<div class="ep-info">' +
+        '<div class="ep-top"><span class="ep-num">E'+(i+1)+'</span><span class="ep-dur">'+EP_DUR[S.s]+'m</span></div>' +
+        '<div class="ep-name">'+title+'</div>' +
+      '</div>';
+
     grid.appendChild(card);
   });
 
-  updateOverallProgress();
-  showResumeBanner();
+  updateStat();
+  renderHero();
 }
 
-function updateOverallProgress() {
-  let watched = 0, total = 0;
-  SEASONS.forEach((s, si) => {
-    s.episodes.forEach((_, ei) => {
-      total++;
-      if (getEpState(si, ei).watched) watched++;
-    });
-  });
-  document.getElementById('overall-progress').textContent = `${watched} / ${total} watched`;
+function updateStat() {
+  let w=0, tot=0;
+  SEASONS.forEach((S,si) => S.eps.forEach((_,ei) => { tot++; if(getE(si,ei).w) w++; }));
+  document.getElementById('watch-stat').textContent = w+' / '+tot;
 }
 
-function showResumeBanner() {
-  const banner = document.getElementById('resume-banner');
-  const eps = getEpState(state.lastSeason, state.lastEpisode);
-  const hasProgress = eps.time > 0 || state.lastSeason > 0 || state.lastEpisode > 0;
+function renderHero() {
+  const hero = document.getElementById('hero');
+  const spacer = document.getElementById('hero-spacer');
+  const any = Object.values(ST.eps).some(e=>e.t>0||e.w);
+  if(!any){ hero.style.display='none'; spacer.style.display='block'; return; }
 
-  if (!hasProgress && Object.keys(state.episodes).length === 0) {
-    banner.style.display = 'none';
-    return;
-  }
-
-  const s = SEASONS[state.lastSeason];
-  const ep = s.episodes[state.lastEpisode];
-  const mins = Math.floor(eps.time / 60);
-  const secs = String(Math.floor(eps.time % 60)).padStart(2, '0');
-
-  document.getElementById('resume-title').textContent =
-    eps.watched ? `Next Up: ${getNextEp()?.ep?.title || 'All watched!'}` : `Continue: ${ep.title}`;
-  document.getElementById('resume-subtitle').textContent =
-    eps.watched ? `S${s.season} — start next episode` : `S${s.season} E${state.lastEpisode + 1} — ${mins}:${secs} in`;
-
-  banner.style.display = 'block';
-}
-
-function getNextEp() {
-  let si = state.lastSeason, ei = state.lastEpisode + 1;
-  if (ei >= SEASONS[si].episodes.length) {
-    si++;
-    ei = 0;
-  }
-  if (si >= SEASONS.length) return null;
-  return { season: si, episode: ei, ep: SEASONS[si].episodes[ei] };
-}
-
-// ─── PLAYER ───────────────────────────────────────────────────────────
-function openPlayer(si, ei) {
-  currentEp = { season: si, episode: ei };
-  const s = SEASONS[si];
-  const ep = s.episodes[ei];
-  const eps = getEpState(si, ei);
-
-  document.getElementById('player-ep-label').textContent = `S${s.season} E${ei + 1}`;
-  document.getElementById('player-ep-title').textContent = ep.title;
-  document.getElementById('player-overlay').classList.add('active');
-
-  const iframe = document.getElementById('drive-player');
-  const placeholder = document.getElementById('video-placeholder');
-
-  if (ep.src) {
-    // Load Google Drive embed
-    iframe.src = ep.src;
-    iframe.style.display = 'block';
-    placeholder.style.display = 'none';
+  const e = getE(ST.lastS, ST.lastE);
+  if(e.w) {
+    const nx = nextFrom(ST.lastS, ST.lastE);
+    if(!nx){ hero.style.display='none'; spacer.style.display='block'; return; }
+    const nS=SEASONS[nx.si];
+    document.getElementById('hero-eyebrow').textContent='Up Next';
+    document.getElementById('hero-title').textContent=nS.eps[nx.ei];
+    document.getElementById('hero-meta').textContent='Season '+nS.s+' \u00b7 Episode '+(nx.ei+1);
   } else {
-    // No source yet — show placeholder
-    iframe.src = '';
-    iframe.style.display = 'none';
-    placeholder.style.display = 'flex';
-    document.getElementById('placeholder-title').textContent = ep.title;
+    const S=SEASONS[ST.lastS], title=S.eps[ST.lastE];
+    const m=Math.floor(e.t/60), sc=String(Math.floor(e.t%60)).padStart(2,'0');
+    document.getElementById('hero-eyebrow').textContent='Continue Watching';
+    document.getElementById('hero-title').textContent=title;
+    document.getElementById('hero-meta').textContent='Season '+S.s+' \u00b7 Episode '+(ST.lastE+1)+' \u00b7 '+m+':'+sc+' in';
   }
+  hero.style.display='block';
+  spacer.style.display='none';
+}
 
-  totalTime = ep.duration * 60;
-  currentTime = eps.watched ? 0 : (eps.time || 0);
+function dismissHero() {
+  document.getElementById('hero').style.display='none';
+  document.getElementById('hero-spacer').style.display='block';
+}
 
-  state.lastSeason = si;
-  state.lastEpisode = ei;
-  saveState();
+/* ═══════════════════════════════════════════════════════
+   PLAYER
+═══════════════════════════════════════════════════════ */
+function openPlayer(si, ei) {
+  const S = SEASONS[si];
+  const title = S.eps[ei];
+  const e = getE(si, ei);
+  const dur = EP_DUR[S.s];
+
+  curEp = {si, ei};
+  ST.lastS=si; ST.lastE=ei; persist();
+
+  // Header
+  document.getElementById('p-tag').textContent = 'S'+S.s+' \u00b7 E'+(ei+1);
+  document.getElementById('p-title').textContent = title;
+
+  // Load iframe — VidKing uses 1-based episode numbers
+  const iframe  = document.getElementById('vid-iframe');
+  const ph      = document.getElementById('vid-ph');
+  const loader  = document.getElementById('vid-loader');
+
+  loader.classList.remove('hide');
+  iframe.src = vidURL(S.s, ei+1);
+  iframe.style.display = 'block';
+  ph.style.display = 'none';
+
+  // Hide loader after the iframe has had time to load
+  setTimeout(() => loader.classList.add('hide'), 3500);
+
+  // Clock
+  total = dur * 60;
+  clock = e.w ? 0 : (e.t || 0);
+
+  // Open overlay
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 
   updateSeekUI();
-  startFakePlayback();
+  // Auto-start clock immediately — synced with iframe load
+  clockStart();
 }
 
 function closePlayer() {
-  document.getElementById('player-overlay').classList.remove('active');
-  // Stop Drive video by clearing iframe src
-  const iframe = document.getElementById('drive-player');
+  clockStop(); saveClock();
+  const iframe = document.getElementById('vid-iframe');
   iframe.src = '';
   iframe.style.display = 'none';
-  stopFakePlayback();
-  saveCurrentTime();
+  document.getElementById('vid-ph').style.display = 'flex';
+  document.getElementById('vid-loader').classList.add('hide');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
   renderSeason();
-  showResumeBanner();
 }
 
-function saveCurrentTime() {
-  if (!currentEp) return;
-  const { season: si, episode: ei } = currentEp;
-  const isWatched = currentTime >= totalTime * 0.92;
-  setEpState(si, ei, { time: currentTime, watched: isWatched });
-  state.lastSeason = si;
-  state.lastEpisode = ei;
-  saveState();
+function saveClock() {
+  if(!curEp) return;
+  const {si,ei}=curEp;
+  setE(si,ei,{t:clock,w:clock>=total*0.92});
+  ST.lastS=si; ST.lastE=ei; persist();
 }
 
-// Simulate playback with a timer (replace with real <video> logic if you have src files)
-function startFakePlayback() {
-  stopFakePlayback();
-  isPlaying = true;
-  updatePlayIcon();
-  simInterval = setInterval(() => {
-    if (!isPlaying) return;
-    currentTime += 1;
-    if (currentTime >= totalTime) {
-      currentTime = totalTime;
-      updateSeekUI();
-      onEpisodeEnded();
-      return;
-    }
-    updateSeekUI();
-    // save every 10s
-    if (Math.floor(currentTime) % 10 === 0) saveCurrentTime();
-  }, 1000);
+/* ═══════════════════════════════════════════════════════
+   WALL-CLOCK ENGINE
+═══════════════════════════════════════════════════════ */
+function clockStart() {
+  if(playing) return;
+  playing=true; wallStart=Date.now(); clockAtStart=clock;
+  updatePlayIcon(); scheduleTick();
+}
+function clockPause() {
+  if(!playing) return;
+  clock=clockAtStart+(Date.now()-wallStart)/1000;
+  playing=false; updatePlayIcon(); cancelTick(); saveClock();
+}
+function clockStop() { playing=false; cancelTick(); }
+function scheduleTick() { rafId=requestAnimationFrame(tick); }
+function cancelTick() { if(rafId){cancelAnimationFrame(rafId);rafId=null;} }
+
+function tick() {
+  if(!playing) return;
+  clock=clockAtStart+(Date.now()-wallStart)/1000;
+  if(clock>=total){ clock=total; updateSeekUI(); onEnded(); return; }
+  updateSeekUI();
+  if(Date.now()-lastSave>8000){ saveClock(); lastSave=Date.now(); }
+  scheduleTick();
 }
 
-function stopFakePlayback() {
-  if (simInterval) clearInterval(simInterval);
-  simInterval = null;
+function onEnded() {
+  clockStop(); playing=false; updatePlayIcon(); saveClock();
+  toast('Episode complete — loading next…');
+  setTimeout(skipToNext,1600);
 }
 
-function onEpisodeEnded() {
-  stopFakePlayback();
-  isPlaying = false;
-  updatePlayIcon();
-  saveCurrentTime();
-  showToast('Episode finished! Loading next…');
-  setTimeout(() => playNext(), 1500);
-}
-
-function togglePlay() {
-  isPlaying = !isPlaying;
-  updatePlayIcon();
-  if (isPlaying) startFakePlayback();
-  else stopFakePlayback();
-}
+function togglePlay() { if(playing) clockPause(); else clockStart(); }
 
 function updatePlayIcon() {
-  const btn = document.getElementById('play-pause-btn');
-  const icon = document.getElementById('play-icon');
-  if (isPlaying) {
-    icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
-  } else {
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // play
-  }
+  document.getElementById('pp-icon').innerHTML = playing
+    ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
 }
 
-function seekTo(e) {
-  const bar = document.getElementById('seek-bar');
-  const rect = bar.getBoundingClientRect();
-  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  currentTime = ratio * totalTime;
-  updateSeekUI();
-  saveCurrentTime();
+function onSeek(ev) {
+  const bar=document.getElementById('seekbar'), r=bar.getBoundingClientRect();
+  clock=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width))*total;
+  wallStart=Date.now(); clockAtStart=clock;
+  updateSeekUI(); saveClock();
 }
 
-function skipBack() {
-  currentTime = Math.max(0, currentTime - 10);
+function skip(sec) {
+  clock=Math.max(0,Math.min(total,clock+sec));
+  wallStart=Date.now(); clockAtStart=clock;
   updateSeekUI();
-}
-
-function skipForward() {
-  currentTime = Math.min(totalTime, currentTime + 30);
-  updateSeekUI();
-  if (currentTime >= totalTime) onEpisodeEnded();
+  if(clock>=total) onEnded();
 }
 
 function updateSeekUI() {
-  const pct = totalTime > 0 ? (currentTime / totalTime) * 100 : 0;
-  document.getElementById('seek-fill').style.width = pct + '%';
-  document.getElementById('time-current').textContent = formatTime(currentTime);
-  document.getElementById('time-total').textContent = formatTime(totalTime);
+  const pct=total>0?(clock/total)*100:0;
+  document.getElementById('seek-fill').style.width=pct+'%';
+  document.getElementById('t-now').textContent=fmt(clock);
+  document.getElementById('t-end').textContent=fmt(total);
 }
 
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  const sec = String(Math.floor(s % 60)).padStart(2, '0');
-  return `${m}:${sec}`;
+const fmt = s => Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+
+function skipToNext() {
+  if(!curEp) return;
+  const nx=nextFrom(curEp.si,curEp.ei);
+  if(!nx){ toast('🎬 That was the series finale!'); closePlayer(); return; }
+  clockStop(); openPlayer(nx.si,nx.ei);
+  toast('Now playing S'+SEASONS[nx.si].s+' E'+(nx.ei+1));
 }
 
-function playNext() {
-  if (!currentEp) return;
-  const next = getNextEpFrom(currentEp.season, currentEp.episode);
-  if (!next) {
-    showToast('You\'ve reached the end!');
-    closePlayer();
-    return;
-  }
-  stopFakePlayback();
-  openPlayer(next.season, next.episode);
-  showToast(`Now playing S${SEASONS[next.season].season} E${next.episode + 1}`);
-}
-
-function getNextEpFrom(si, ei) {
-  let nei = ei + 1;
-  let nsi = si;
-  if (nei >= SEASONS[si].episodes.length) {
-    nsi++;
-    nei = 0;
-  }
-  if (nsi >= SEASONS.length) return null;
-  return { season: nsi, episode: nei };
+function nextFrom(si,ei) {
+  let nei=ei+1, nsi=si;
+  if(nei>=SEASONS[si].eps.length){ nsi++; nei=0; }
+  if(nsi>=SEASONS.length) return null;
+  return {si:nsi,ei:nei};
 }
 
 function toggleMute() {
-  isMuted = !isMuted;
-  const icon = document.getElementById('vol-icon');
-  icon.innerHTML = isMuted
-    ? '<path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06A8.99 8.99 0 0 0 17 18.73l2 2L20.73 19 4.27 3zM12 4 9.91 6.09 12 8.18V4z"/>'
-    : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+  const ico=document.getElementById('vol-ico');
+  ico.innerHTML=ico.innerHTML.includes('M16.5')
+    ?'<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>'
+    :'<path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06A8.99 8.99 0 0 0 17 18.73l2 2L20.73 19 4.27 3zM12 4 9.91 6.09 12 8.18V4z"/>';
 }
 
-function setVolume(e) {
-  const bar = document.querySelector('.volume-slider');
-  const rect = bar.getBoundingClientRect();
-  volumeLevel = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  document.getElementById('volume-fill').style.width = (volumeLevel * 100) + '%';
+function setVol(ev) {
+  const bar=document.querySelector('.vol-track'),r=bar.getBoundingClientRect();
+  document.getElementById('vol-fill').style.width=(Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width))*100)+'%';
 }
 
+/* ═══════════════════════════════════════════════════════
+   RESUME & RANDOM
+═══════════════════════════════════════════════════════ */
 function resumeWatching() {
-  const eps = getEpState(state.lastSeason, state.lastEpisode);
-  if (eps.watched) {
-    const next = getNextEp();
-    if (next) {
-      activeSeason = next.season;
-      renderSeason();
-      openPlayer(next.season, next.episode);
-    } else {
-      showToast('You\'ve watched everything!');
+  const e=getE(ST.lastS,ST.lastE);
+  if(e.w){ const nx=nextFrom(ST.lastS,ST.lastE); if(nx){curSeason=nx.si;renderSeason();openPlayer(nx.si,nx.ei);}else toast('You\'ve seen everything!'); }
+  else{ curSeason=ST.lastS; renderSeason(); openPlayer(ST.lastS,ST.lastE); }
+}
+
+function playRandom() {
+  const btn=document.getElementById('random-btn');
+  btn.classList.add('spinning');
+  setTimeout(()=>btn.classList.remove('spinning'),500);
+  // pick random episode from any season
+  const total_eps = SEASONS.reduce((a,S)=>a+S.eps.length,0);
+  const pick = Math.floor(Math.random()*total_eps);
+  let count=0;
+  for(let si=0;si<SEASONS.length;si++){
+    for(let ei=0;ei<SEASONS[si].eps.length;ei++){
+      if(count===pick){
+        curSeason=si; renderSeason();
+        setTimeout(()=>{ openPlayer(si,ei); toast('🎲 Random — S'+SEASONS[si].s+' E'+(ei+1)); },180);
+        return;
+      }
+      count++;
     }
-  } else {
-    activeSeason = state.lastSeason;
-    renderSeason();
-    openPlayer(state.lastSeason, state.lastEpisode);
   }
 }
 
 function resetProgress() {
-  if (!confirm('Reset all watch progress? This cannot be undone.')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  state = loadState();
-  activeSeason = 0;
-  renderSeason();
-  document.getElementById('resume-banner').style.display = 'none';
-  showToast('Progress reset');
+  if(!confirm('Reset all watch progress?')) return;
+  localStorage.removeItem(SK);
+  ST={lastS:0,lastE:0,eps:{}}; curSeason=0; renderSeason();
+  document.getElementById('hero').style.display='none';
+  document.getElementById('hero-spacer').style.display='block';
+  toast('Progress cleared');
 }
 
-// ─── TOAST ────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+let toastTmr;
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTmr); toastTmr=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-// ─── KEYBOARD ─────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('player-overlay').classList.contains('active')) return;
-  if (e.key === 'Escape') closePlayer();
-  if (e.key === ' ') { e.preventDefault(); togglePlay(); }
-  if (e.key === 'ArrowRight') skipForward();
-  if (e.key === 'ArrowLeft') skipBack();
+/* ═══════════════════════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════════════════════ */
+document.addEventListener('keydown', ev => {
+  if(!document.getElementById('overlay').classList.contains('open')) return;
+  if(ev.key==='Escape')     closePlayer();
+  if(ev.key===' ')          { ev.preventDefault(); togglePlay(); }
+  if(ev.key==='ArrowRight') skip(30);
+  if(ev.key==='ArrowLeft')  skip(-10);
+  if(ev.key==='n'||ev.key==='N') skipToNext();
 });
 
-// click outside player to close
-document.getElementById('player-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('player-overlay')) closePlayer();
+document.getElementById('overlay').addEventListener('click', ev => {
+  if(ev.target===document.getElementById('overlay')) closePlayer();
 });
 
-// ─── INIT ─────────────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
 renderSeason();
 </script>
 </body>
