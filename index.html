@@ -213,6 +213,16 @@
     opacity: 0.65;
   }
 
+  .video-available-dot {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    width: 8px; height: 8px;
+    background: #4caf7d;
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow: 0 0 0 2px rgba(76,175,125,0.3);
+  }
+
   .ep-card.current {
     border-color: var(--caramel);
     box-shadow: 0 0 0 3px rgba(194,123,58,0.2);
@@ -668,12 +678,19 @@
     </div>
 
     <div class="video-wrap">
-      <div class="video-placeholder">
+      <!-- Google Drive iframe player (shown when src is a Drive link) -->
+      <iframe id="drive-player"
+        style="display:none;width:100%;height:100%;border:none;"
+        allowfullscreen
+        allow="autoplay"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox">
+      </iframe>
+      <!-- Placeholder for episodes without a video source -->
+      <div class="video-placeholder" id="video-placeholder">
         <div class="big-icon">📺</div>
         <p id="placeholder-title">The One Where Monica Gets a Roommate</p>
-        <small>Add your video source to the episodes data below</small>
+        <small>No video source added for this episode yet</small>
       </div>
-      <!-- <video id="main-video" controls></video> -->
     </div>
 
     <div class="controls">
@@ -719,34 +736,37 @@
 
 <script>
 // ─── EPISODES DATA ────────────────────────────────────────────────────
-// Replace `src: ""` with your actual video file URL or path for each episode
+// src: Google Drive embed URL (converted from share links) or direct video URL
+// To convert a Google Drive share link:
+//   Share link:  https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+//   Embed URL:   https://drive.google.com/file/d/FILE_ID/preview
 const SEASONS = [
   {
     season: 1,
     episodes: [
-      { title: "The One Where Monica Gets a Roommate", duration: 22, src: "" },
+      { title: "The One Where Monica Gets a Roommate", duration: 22, src: "https://drive.google.com/file/d/1htNSJJKqgdhNv8Wx_NFT7jv1pE4xN-mYqw/preview" },
       { title: "The One with the Sonogram at the End", duration: 22, src: "" },
-      { title: "The One with the Thumb", duration: 22, src: "" },
+      { title: "The One with the Thumb", duration: 22, src: "https://drive.google.com/file/d/134QO1_9wsNn3KR0nYt0JcrZ_Urz97Mq_-A/preview" },
       { title: "The One with George Stephanopoulos", duration: 22, src: "" },
-      { title: "The One with the East German Laundry Detergent", duration: 22, src: "" },
+      { title: "The One with the East German Laundry Detergent", duration: 22, src: "https://drive.google.com/file/d/1xZHgYaKqB4HD6Tv8IHXr0pB3cAxMaDpx-A/preview" },
       { title: "The One with the Butt", duration: 22, src: "" },
-      { title: "The One with the Blackout", duration: 22, src: "" },
+      { title: "The One with the Blackout", duration: 22, src: "https://drive.google.com/file/d/1QLwH-mB015uCCC5Gv4k-FIBD69pw3vudmg/preview" },
       { title: "The One Where Nana Dies Twice", duration: 22, src: "" },
-      { title: "The One Where Underdog Gets Away", duration: 22, src: "" },
+      { title: "The One Where Underdog Gets Away", duration: 22, src: "https://drive.google.com/file/d/1iPwJWGRWIxIm2jyM7nxakPgYshxsieeuVA/preview" },
       { title: "The One with the Monkey", duration: 22, src: "" },
-      { title: "The One with Mrs. Bing", duration: 22, src: "" },
+      { title: "The One with Mrs. Bing", duration: 22, src: "https://drive.google.com/file/d/1vDrn1g0BDaZvqAYfUMuSDpwu8874MsSsrA/preview" },
       { title: "The One with the Dozen Lasagnas", duration: 22, src: "" },
-      { title: "The One with the Boobies", duration: 22, src: "" },
+      { title: "The One with the Boobies", duration: 22, src: "https://drive.google.com/file/d/1xonAf5kEW2_EnKZGcu0IZaFpGOVIYBc4sw/preview" },
       { title: "The One with the Candy Hearts", duration: 22, src: "" },
-      { title: "The One with the Stoned Guy", duration: 22, src: "" },
+      { title: "The One with the Stoned Guy", duration: 22, src: "https://drive.google.com/file/d/1TN1CIw1zMNxMu_EaMn289Cult_kqKn6fYA/preview" },
       { title: "The One with Two Parts: Part 1", duration: 22, src: "" },
-      { title: "The One with Two Parts: Part 2", duration: 22, src: "" },
+      { title: "The One with Two Parts: Part 2", duration: 22, src: "https://drive.google.com/file/d/1oMv-z5dt1mQs1A3p1DyuuDeyEReEWWBp-A/preview" },
       { title: "The One with All the Poker", duration: 22, src: "" },
-      { title: "The One Where the Monkey Gets Away", duration: 22, src: "" },
+      { title: "The One Where the Monkey Gets Away", duration: 22, src: "https://drive.google.com/file/d/1MXRGR-egDZCBj_wwiHYdJCLmvlYzZAVCYg/preview" },
       { title: "The One with the Evil Orthodontist", duration: 22, src: "" },
-      { title: "The One with the Fake Monica", duration: 22, src: "" },
+      { title: "The One with the Fake Monica", duration: 22, src: "https://drive.google.com/file/d/1OvFsyQKPs0UOMUjrCfgFZUPTPHJaBbuR9Q/preview" },
       { title: "The One with the Ick Factor", duration: 22, src: "" },
-      { title: "The One with the Birth", duration: 22, src: "" },
+      { title: "The One with the Birth", duration: 22, src: "https://drive.google.com/file/d/14X3TQqzcIxTd8NfBTDw2fAlKlnqqELP3XA/preview" },
       { title: "The One Where Rachel Finds Out", duration: 22, src: "" },
     ]
   },
@@ -1093,6 +1113,7 @@ function renderSeason() {
         ${isWatched ? '<div class="watched-badge">✓ Watched</div>' : ''}
         ${isCurrentEp && !isWatched && eps.time > 0 ? '<div class="current-badge">▶ In Progress</div>' : ''}
         ${progressPct > 0 && !isWatched ? `<div class="ep-progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>` : ''}
+        ${ep.src ? '<div class="video-available-dot" title="Video available"></div>' : ''}
       </div>
       <div class="ep-info">
         <div class="ep-meta">
@@ -1162,8 +1183,23 @@ function openPlayer(si, ei) {
 
   document.getElementById('player-ep-label').textContent = `S${s.season} E${ei + 1}`;
   document.getElementById('player-ep-title').textContent = ep.title;
-  document.getElementById('placeholder-title').textContent = ep.title;
   document.getElementById('player-overlay').classList.add('active');
+
+  const iframe = document.getElementById('drive-player');
+  const placeholder = document.getElementById('video-placeholder');
+
+  if (ep.src) {
+    // Load Google Drive embed
+    iframe.src = ep.src;
+    iframe.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    // No source yet — show placeholder
+    iframe.src = '';
+    iframe.style.display = 'none';
+    placeholder.style.display = 'flex';
+    document.getElementById('placeholder-title').textContent = ep.title;
+  }
 
   totalTime = ep.duration * 60;
   currentTime = eps.watched ? 0 : (eps.time || 0);
@@ -1178,6 +1214,10 @@ function openPlayer(si, ei) {
 
 function closePlayer() {
   document.getElementById('player-overlay').classList.remove('active');
+  // Stop Drive video by clearing iframe src
+  const iframe = document.getElementById('drive-player');
+  iframe.src = '';
+  iframe.style.display = 'none';
   stopFakePlayback();
   saveCurrentTime();
   renderSeason();
