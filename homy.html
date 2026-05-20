@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIMYM Streaming</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: white;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: #181818;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid #2a2a2a;
+    }
+
+    .sidebar h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .upload-box {
+      background: #2563eb;
+      padding: 12px;
+      text-align: center;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: 0.2s;
+    }
+
+    .upload-box:hover {
+      background: #1d4ed8;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .episode {
+      background: #242424;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .episode:hover {
+      background: #333;
+    }
+
+    .episode.active {
+      background: #2563eb;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .title {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    video {
+      width: 100%;
+      height: calc(100vh - 120px);
+      background: black;
+      border-radius: 20px;
+    }
+
+    .empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 24px;
+    }
+
+    @media(max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 250px;
+      }
+
+      video {
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h1>How I Met Your Mother</h1>
+
+    <label class="upload-box">
+      Upload Episodes
+      <input type="file" id="upload" accept="video/*" multiple>
+    </label>
+
+    <div id="episodeList"></div>
+  </div>
+
+  <div class="main">
+    <div class="title" id="title">Upload episodes to begin</div>
+
+    <div id="playerContainer" class="empty">
+      No episode selected
+    </div>
+  </div>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const episodeList = document.getElementById('episodeList');
+    const title = document.getElementById('title');
+    const playerContainer = document.getElementById('playerContainer');
+
+    let episodes = [];
+    let currentIndex = 0;
+
+    upload.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files)
+        .filter(file => file.type.startsWith('video/'))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+      episodes = files;
+      renderEpisodes();
+
+      if (episodes.length > 0) {
+        playEpisode(0);
+      }
+    });
+
+    function renderEpisodes() {
+      episodeList.innerHTML = '';
+
+      episodes.forEach((episode, index) => {
+        const div = document.createElement('div');
+        div.className = 'episode';
+        div.innerText = episode.name;
+
+        div.onclick = () => playEpisode(index);
+
+        div.id = 'ep-' + index;
+
+        episodeList.appendChild(div);
+      });
+    }
+
+    function playEpisode(index) {
+      currentIndex = index;
+
+      document.querySelectorAll('.episode').forEach(ep => {
+        ep.classList.remove('active');
+      });
+
+      document.getElementById('ep-' + index).classList.add('active');
+
+      const episode = episodes[index];
+      const url = URL.createObjectURL(episode);
+
+      title.innerText = episode.name;
+
+      playerContainer.innerHTML = `
+        <video id="videoPlayer" controls autoplay>
+          <source src="${url}" type="${episode.type}">
+        </video>
+      `;
+
+      const video = document.getElementById('videoPlayer');
+
+      video.onended = () => {
+        if (currentIndex + 1 < episodes.length) {
+          playEpisode(currentIndex + 1);
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
