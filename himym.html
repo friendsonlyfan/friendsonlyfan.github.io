@@ -1,205 +1,1111 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HIMYM Streaming</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIMYM — How I Met Your Mother</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --surface: #141414;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --red: #e50914;
+    --red-hover: #f40612;
+    --gold: #f5a623;
+    --text: #e5e5e5;
+    --muted: #8c8c8c;
+    --white: #ffffff;
+  }
 
-    body {
-      background: #0f0f0f;
-      color: white;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+- { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .sidebar {
-      width: 320px;
-      background: #181818;
-      padding: 20px;
-      overflow-y: auto;
-      border-right: 1px solid #2a2a2a;
-    }
+body {
+background: var(–black);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
 
-    .sidebar h1 {
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
+/* ── MODAL OVERLAY ── */
+#who-modal {
+position: fixed; inset: 0;
+background: rgba(0,0,0,0.92);
+backdrop-filter: blur(12px);
+z-index: 1000;
+display: flex;
+align-items: center;
+justify-content: center;
+animation: fadeIn 0.4s ease;
+}
 
-    .upload-box {
-      background: #2563eb;
-      padding: 12px;
-      text-align: center;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: 0.2s;
-    }
+.modal-box {
+text-align: center;
+max-width: 520px;
+width: 90%;
+}
 
-    .upload-box:hover {
-      background: #1d4ed8;
-    }
+.modal-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(36px, 8vw, 64px);
+letter-spacing: 3px;
+color: var(–white);
+line-height: 1;
+margin-bottom: 6px;
+}
 
-    input[type="file"] {
-      display: none;
-    }
+.modal-logo span { color: var(–red); }
 
-    .episode {
-      background: #242424;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.modal-tagline {
+color: var(–muted);
+font-size: 13px;
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 48px;
+font-weight: 300;
+}
 
-    .episode:hover {
-      background: #333;
-    }
+.modal-question {
+font-size: clamp(20px, 4vw, 28px);
+font-weight: 500;
+margin-bottom: 32px;
+color: var(–white);
+}
 
-    .episode.active {
-      background: #2563eb;
-    }
+.profiles-grid {
+display: flex;
+gap: 20px;
+justify-content: center;
+flex-wrap: wrap;
+}
 
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
+.profile-btn {
+background: none;
+border: 2px solid var(–border);
+border-radius: 12px;
+padding: 18px 24px;
+cursor: pointer;
+transition: all 0.2s ease;
+min-width: 110px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 12px;
+color: var(–text);
+}
 
-    .title {
-      font-size: 24px;
-      margin-bottom: 15px;
-    }
+.profile-btn:hover {
+border-color: var(–white);
+background: rgba(255,255,255,0.06);
+transform: scale(1.06);
+}
 
-    video {
-      width: 100%;
-      height: calc(100vh - 120px);
-      background: black;
-      border-radius: 20px;
-    }
+.profile-avatar {
+width: 64px; height: 64px;
+border-radius: 50%;
+font-size: 28px;
+display: flex; align-items: center; justify-content: center;
+}
 
-    .empty {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #888;
-      font-size: 24px;
-    }
+.profile-name {
+font-size: 13px;
+font-weight: 500;
+letter-spacing: 0.5px;
+}
 
-    @media(max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
+/* ── MAIN APP (hidden until profile chosen) ── */
+#app { display: none; }
 
-      .sidebar {
-        width: 100%;
-        height: 250px;
-      }
+/* ── NAVBAR ── */
+.navbar {
+position: fixed; top: 0; left: 0; right: 0;
+z-index: 100;
+padding: 0 5%;
+height: 68px;
+display: flex; align-items: center; justify-content: space-between;
+background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+transition: background 0.3s;
+}
 
-      video {
-        height: 60vh;
-      }
-    }
-  </style>
+.navbar.scrolled { background: var(–black); }
+
+.nav-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 28px;
+letter-spacing: 2px;
+color: var(–white);
+}
+.nav-logo span { color: var(–red); }
+
+.nav-right {
+display: flex; align-items: center; gap: 20px;
+}
+
+.viewer-badge {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 6px 14px 6px 8px;
+display: flex; align-items: center; gap: 8px;
+font-size: 13px;
+cursor: pointer;
+transition: background 0.2s;
+}
+.viewer-badge:hover { background: #2a2a2a; }
+.viewer-dot { width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+/* ── HERO ── */
+.hero {
+position: relative;
+height: 85vh;
+min-height: 500px;
+display: flex;
+align-items: flex-end;
+padding: 0 5% 80px;
+overflow: hidden;
+}
+
+.hero-bg {
+position: absolute; inset: 0;
+background:
+linear-gradient(to top, var(–black) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%),
+linear-gradient(to right, var(–black) 0%, transparent 60%),
+url(‘https://upload.wikimedia.org/wikipedia/en/thumb/3/32/How_I_Met_Your_Mother_cast.jpg/1200px-How_I_Met_Your_Mother_cast.jpg’) center/cover no-repeat;
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 600px; }
+
+.hero-show-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(48px, 10vw, 88px);
+line-height: 0.95;
+letter-spacing: 2px;
+margin-bottom: 8px;
+}
+
+.hero-show-title .red { color: var(–red); }
+
+.hero-meta {
+display: flex; align-items: center; gap: 16px;
+margin-bottom: 16px;
+flex-wrap: wrap;
+}
+
+.badge {
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+padding: 4px 10px;
+border-radius: 4px;
+}
+
+.badge-gold { background: rgba(245,166,35,0.18); color: var(–gold); border: 1px solid rgba(245,166,35,0.3); }
+.badge-year { background: rgba(255,255,255,0.08); color: var(–muted); border: 1px solid var(–border); }
+.badge-rating { background: rgba(229,9,20,0.15); color: #ff6b6b; border: 1px solid rgba(229,9,20,0.25); }
+
+.hero-desc {
+font-size: 15px;
+line-height: 1.65;
+color: #ccc;
+max-width: 480px;
+margin-bottom: 28px;
+font-weight: 300;
+}
+
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn-play {
+background: var(–white);
+color: var(–black);
+border: none;
+border-radius: 6px;
+padding: 12px 28px;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+display: flex; align-items: center; gap: 8px;
+transition: background 0.2s, transform 0.15s;
+font-family: ‘DM Sans’, sans-serif;
+}
+.btn-play:hover { background: #ddd; transform: scale(1.03); }
+
+.btn-info {
+background: rgba(109,109,110,0.7);
+color: var(–white);
+border: none;
+border-radius: 6px;
+padding: 12px 28px;
+font-size: 15px;
+font-weight: 500;
+cursor: pointer;
+display: flex; align-items: center; gap: 8px;
+transition: background 0.2s;
+font-family: ‘DM Sans’, sans-serif;
+}
+.btn-info:hover { background: rgba(109,109,110,0.4); }
+
+/* ── SEASON SELECTOR ── */
+.section {
+padding: 0 5% 48px;
+}
+
+.section-header {
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 20px;
+padding-top: 12px;
+}
+
+.section-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 2px;
+color: var(–white);
+}
+
+.season-tabs {
+display: flex; gap: 8px; flex-wrap: wrap;
+}
+
+.season-tab {
+background: var(–card);
+border: 1px solid var(–border);
+color: var(–muted);
+border-radius: 6px;
+padding: 7px 18px;
+font-size: 13px;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.2s;
+font-family: ‘DM Sans’, sans-serif;
+}
+
+.season-tab:hover { color: var(–white); border-color: #555; }
+.season-tab.active { background: var(–red); border-color: var(–red); color: var(–white); }
+
+/* ── EPISODE GRID ── */
+.episodes-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 16px;
+}
+
+.ep-card {
+background: var(–card);
+border-radius: 8px;
+overflow: hidden;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+border: 1px solid transparent;
+position: relative;
+}
+
+.ep-card:hover {
+transform: scale(1.03);
+box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+border-color: var(–border);
+}
+
+.ep-card.playing {
+border-color: var(–red);
+box-shadow: 0 0 0 1px var(–red), 0 8px 40px rgba(229,9,20,0.2);
+}
+
+.ep-thumb {
+position: relative;
+aspect-ratio: 16/9;
+background: #111;
+overflow: hidden;
+}
+
+.ep-thumb-img {
+width: 100%; height: 100%;
+object-fit: cover;
+opacity: 0.7;
+transition: opacity 0.2s;
+}
+
+.ep-card:hover .ep-thumb-img { opacity: 0.5; }
+
+.ep-thumb-fallback {
+width: 100%; height: 100%;
+background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 48px;
+color: rgba(255,255,255,0.12);
+letter-spacing: 2px;
+}
+
+.ep-play-overlay {
+position: absolute; inset: 0;
+display: flex; align-items: center; justify-content: center;
+opacity: 0;
+transition: opacity 0.2s;
+}
+
+.ep-card:hover .ep-play-overlay { opacity: 1; }
+
+.ep-play-circle {
+width: 52px; height: 52px;
+background: rgba(255,255,255,0.9);
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 20px;
+color: var(–black);
+}
+
+.ep-number-badge {
+position: absolute; top: 10px; left: 10px;
+background: var(–red);
+color: white;
+font-size: 11px;
+font-weight: 700;
+padding: 3px 8px;
+border-radius: 4px;
+letter-spacing: 0.5px;
+}
+
+.ep-duration-badge {
+position: absolute; bottom: 8px; right: 8px;
+background: rgba(0,0,0,0.75);
+color: var(–muted);
+font-size: 11px;
+padding: 3px 8px;
+border-radius: 4px;
+}
+
+.playing-indicator {
+position: absolute; top: 10px; right: 10px;
+background: var(–red);
+color: white;
+font-size: 10px;
+font-weight: 700;
+padding: 3px 8px;
+border-radius: 4px;
+letter-spacing: 1px;
+display: none;
+}
+
+.ep-card.playing .playing-indicator { display: block; }
+
+.ep-info {
+padding: 14px 16px 16px;
+}
+
+.ep-title {
+font-size: 14px;
+font-weight: 600;
+margin-bottom: 5px;
+color: var(–white);
+line-height: 1.3;
+}
+
+.ep-desc {
+font-size: 12px;
+color: var(–muted);
+line-height: 1.5;
+font-weight: 300;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+
+/* ── VIDEO PLAYER MODAL ── */
+#player-modal {
+position: fixed; inset: 0;
+background: rgba(0,0,0,0.97);
+z-index: 500;
+display: none;
+flex-direction: column;
+}
+
+#player-modal.open { display: flex; }
+
+.player-topbar {
+padding: 16px 24px;
+display: flex; align-items: center; justify-content: space-between;
+background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+}
+
+.player-episode-info { display: flex; flex-direction: column; gap: 2px; }
+
+.player-show { font-size: 12px; color: var(–muted); letter-spacing: 1px; text-transform: uppercase; }
+.player-ep-title { font-size: 18px; font-weight: 600; color: var(–white); }
+
+.player-close {
+background: rgba(255,255,255,0.1);
+border: 1px solid rgba(255,255,255,0.15);
+color: var(–white);
+width: 40px; height: 40px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 18px;
+display: flex; align-items: center; justify-content: center;
+transition: background 0.2s;
+}
+.player-close:hover { background: rgba(255,255,255,0.2); }
+
+.player-frame-wrap {
+flex: 1;
+display: flex; align-items: center; justify-content: center;
+padding: 60px 0 0;
+}
+
+.player-frame-wrap iframe {
+width: 100%;
+height: 100%;
+border: none;
+}
+
+/* ── DRIVE LINK PROMPT ── */
+#drive-prompt {
+position: fixed; inset: 0;
+background: rgba(0,0,0,0.96);
+z-index: 600;
+display: none;
+align-items: center; justify-content: center;
+}
+#drive-prompt.open { display: flex; }
+
+.drive-box {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 16px;
+padding: 40px;
+max-width: 480px;
+width: 90%;
+text-align: center;
+}
+
+.drive-icon { font-size: 48px; margin-bottom: 16px; }
+.drive-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.drive-sub { font-size: 14px; color: var(–muted); margin-bottom: 24px; line-height: 1.5; }
+
+.drive-input {
+width: 100%;
+background: var(–black);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 12px 16px;
+color: var(–white);
+font-size: 14px;
+font-family: ‘DM Sans’, sans-serif;
+margin-bottom: 16px;
+transition: border-color 0.2s;
+}
+.drive-input:focus { outline: none; border-color: var(–red); }
+
+.drive-btns { display: flex; gap: 10px; }
+
+.btn-red {
+flex: 1;
+background: var(–red);
+color: white;
+border: none;
+border-radius: 8px;
+padding: 12px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+font-family: ‘DM Sans’, sans-serif;
+transition: background 0.2s;
+}
+.btn-red:hover { background: var(–red-hover); }
+
+.btn-cancel {
+flex: 1;
+background: var(–border);
+color: var(–text);
+border: none;
+border-radius: 8px;
+padding: 12px;
+font-size: 14px;
+font-weight: 500;
+cursor: pointer;
+font-family: ‘DM Sans’, sans-serif;
+transition: background 0.2s;
+}
+.btn-cancel:hover { background: #333; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.ep-card { animation: slideUp 0.4s ease both; }
+
+/* stagger */
+.ep-card:nth-child(1) { animation-delay: 0.05s; }
+.ep-card:nth-child(2) { animation-delay: 0.1s; }
+.ep-card:nth-child(3) { animation-delay: 0.15s; }
+.ep-card:nth-child(4) { animation-delay: 0.2s; }
+.ep-card:nth-child(5) { animation-delay: 0.25s; }
+.ep-card:nth-child(6) { animation-delay: 0.3s; }
+.ep-card:nth-child(7) { animation-delay: 0.35s; }
+.ep-card:nth-child(8) { animation-delay: 0.4s; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(–black); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+.no-drive { color: var(–muted); font-size: 12px; font-style: italic; margin-top: 4px; display: block; }
+</style>
+
 </head>
 <body>
 
-  <div class="sidebar">
-    <h1>How I Met Your Mother</h1>
+<!-- ══════ WHO'S WATCHING MODAL ══════ -->
 
-    <label class="upload-box">
-      Upload Episodes
-      <input type="file" id="upload" accept="video/*" multiple>
-    </label>
-
-    <div id="episodeList"></div>
+<div id="who-modal">
+  <div class="modal-box">
+    <div class="modal-logo">HIMYM<span>.</span></div>
+    <div class="modal-tagline">How I Met Your Mother — Streaming</div>
+    <div class="modal-question">Who's watching?</div>
+    <div class="profiles-grid" id="profiles-grid">
+      <!-- Profiles injected by JS -->
+    </div>
+    <p style="margin-top:32px; font-size:12px; color:#555;">
+      + <span id="manage-btn" style="cursor:pointer; text-decoration:underline; color:#777;" onclick="addProfile()">Add Profile</span>
+    </p>
   </div>
+</div>
 
-  <div class="main">
-    <div class="title" id="title">Upload episodes to begin</div>
+<!-- ══════ MAIN APP ══════ -->
 
-    <div id="playerContainer" class="empty">
-      No episode selected
+<div id="app">
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">HIMYM<span>.</span></div>
+    <div class="nav-right">
+      <div class="viewer-badge" onclick="switchProfile()">
+        <div class="viewer-dot" id="nav-avatar">👤</div>
+        <span id="nav-name">Guest</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-show-title">HOW I MET<br>YOUR <span class="red">MOTHER</span></h1>
+      <div class="hero-meta">
+        <span class="badge badge-gold">⭐ 8.3 / 10</span>
+        <span class="badge badge-year">2005 – 2014</span>
+        <span class="badge badge-rating">TV-14</span>
+        <span class="badge badge-year">9 Seasons</span>
+      </div>
+      <p class="hero-desc">
+        Ted Mosby recounts to his kids the legendary story of how he met their mother — a journey filled with love, friendship, bad decisions, and a lot of time at MacLaren's Pub.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-play" onclick="playLatest()">
+          <span>▶</span> Continue Watching
+        </button>
+        <button class="btn-info" onclick="scrollToEpisodes()">
+          <span>☰</span> All Episodes
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEASON / EPISODE SECTION -->
+
+  <section class="section" id="episodes-section">
+    <div class="section-header">
+      <span class="section-title">EPISODES</span>
+      <div class="season-tabs" id="season-tabs"></div>
+    </div>
+    <div class="episodes-grid" id="episodes-grid"></div>
+  </section>
+
+</div>
+
+<!-- ══════ DRIVE LINK PROMPT ══════ -->
+
+<div id="drive-prompt">
+  <div class="drive-box">
+    <div class="drive-icon">🎬</div>
+    <div class="drive-title" id="dp-title">Set Episode Link</div>
+    <div class="drive-sub" id="dp-sub">Paste the Google Drive share link for this episode.</div>
+    <input class="drive-input" id="dp-input" type="text" placeholder="https://drive.google.com/file/d/..." />
+    <span class="no-drive" id="dp-hint"></span>
+    <br><br>
+    <div class="drive-btns">
+      <button class="btn-red" onclick="saveDriveLink()">Save & Play</button>
+      <button class="btn-cancel" onclick="closeDrivePrompt()">Cancel</button>
     </div>
   </div>
+</div>
 
-  <script>
-    const upload = document.getElementById('upload');
-    const episodeList = document.getElementById('episodeList');
-    const title = document.getElementById('title');
-    const playerContainer = document.getElementById('playerContainer');
+<!-- ══════ VIDEO PLAYER MODAL ══════ -->
 
-    let episodes = [];
-    let currentIndex = 0;
+<div id="player-modal">
+  <div class="player-topbar">
+    <div class="player-episode-info">
+      <span class="player-show">HOW I MET YOUR MOTHER</span>
+      <span class="player-ep-title" id="player-ep-title">Episode</span>
+    </div>
+    <button class="player-close" onclick="closePlayer()">✕</button>
+  </div>
+  <div class="player-frame-wrap">
+    <iframe id="player-iframe" allowfullscreen allow="autoplay"></iframe>
+  </div>
+</div>
 
-    upload.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files)
-        .filter(file => file.type.startsWith('video/'))
-        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+<script>
+// ══════ DATA ══════
+const SEASONS = {
+  1: [
+    { ep: 1, title: "Pilot", desc: "Ted meets his future wife's best friend Robin and falls instantly in love." },
+    { ep: 2, title: "Purple Giraffe", desc: "Ted throws three parties hoping Robin will show up." },
+    { ep: 3, title: "The Sweet Taste of Liberty", desc: "Barney convinces Ted on an epic adventure to Philadelphia." },
+    { ep: 4, title: "Return of the Shirt", desc: "Ted rethinks a past relationship while Marshall and Lily fight." },
+    { ep: 5, title: "Okay Awesome", desc: "Ted and Robin go to a club while Marshall and Lily discover a wine bar." },
+    { ep: 6, title: "Slutty Pumpkin", desc: "Ted returns to a Halloween party hoping to find a mystery girl from years ago." },
+    { ep: 7, title: "Matchmaker", desc: "Ted uses a matchmaking service while Marshall discovers a mystery creature." },
+    { ep: 8, title: "The Duel", desc: "Marshall and Ted fight over ownership of the apartment's dueling swords." },
+    { ep: 9, title: "Belly Full of Turkey", desc: "Marshall and Lily spend Thanksgiving with his family in Minnesota." },
+    { ep: 10, title: "The Pineapple Incident", desc: "Ted wakes up next to a mystery woman and a pineapple and tries to piece the night together." },
+    { ep: 11, title: "The Limo", desc: "The gang rides a limo on New Year's Eve hopping between five parties." },
+    { ep: 12, title: "The Wedding", desc: "Barney brings a date to a wedding without knowing she's engaged." },
+    { ep: 13, title: "Drumroll, Please", desc: "Ted meets a mystery woman at the wedding and they agree not to exchange names." },
+    { ep: 14, title: "Zip, Zip, Zip", desc: "Ted and Victoria fast-forward their relationship while Barney and Marshall spend the night together." },
+    { ep: 15, title: "Game Night", desc: "Barney's secret past is revealed during a game night at Marshall and Lily's." },
+    { ep: 16, title: "Cupcake", desc: "Lily gets an offer that could change everything for her and Marshall." },
+    { ep: 17, title: "Life Among the Gorillas", desc: "Marshall struggles to fit in at his new corporate job." },
+    { ep: 18, title: "Nothing Good Happens After 2 AM", desc: "Robin calls Ted at 2 AM and he must decide whether to go to her." },
+    { ep: 19, title: "Mary the Paralegal", desc: "Ted brings a paralegal to an award ceremony and everyone mistakes her for an escort." },
+    { ep: 20, title: "Best Prom Ever", desc: "Lily and Marshall crash a prom to find the perfect band for their wedding." },
+    { ep: 21, title: "Milk", desc: "Ted meets a great woman through a matchmaking service right before meeting the mother." },
+    { ep: 22, title: "Come On", desc: "Ted makes a grand gesture to win Robin as Marshall and Lily's future comes to a head." },
+  ],
+  2: [
+    { ep: 1, title: "Where Were We?", desc: "Marshall deals with the breakup while Ted and Robin start dating." },
+    { ep: 2, title: "The Scorpion and the Toad", desc: "Marshall goes out with Barney to meet women after the breakup." },
+    { ep: 3, title: "Brunch", desc: "Ted's parents announce their divorce at Sunday brunch." },
+    { ep: 4, title: "Ted Mosby: Architect", desc: "Robin uses Ted's profession to attract men at a bar." },
+    { ep: 5, title: "World's Greatest Couple", desc: "Lily moves in with Barney after returning from San Francisco." },
+    { ep: 6, title: "Aldrin Justice", desc: "Lily works at Ted's firm and uses 'Aldrin Justice' on his boss." },
+    { ep: 7, title: "Swarley", desc: "Marshall dates a coffee shop girl while the gang teases Barney about a misspelled name." },
+    { ep: 8, title: "Atlantic City", desc: "Marshall and Lily try to get married in Atlantic City on a whim." },
+    { ep: 9, title: "Slap Bet", desc: "Robin's secret Canadian past is revealed through a slap bet." },
+    { ep: 10, title: "Single Stamina", desc: "Barney's brother James visits and announces he's getting married." },
+    { ep: 11, title: "How Lily Stole Christmas", desc: "Ted uses a bad word that causes a rift with Lily over the holidays." },
+    { ep: 12, title: "First Time in New York", desc: "Robin's sister visits and considers having sex for the first time." },
+    { ep: 13, title: "Columns", desc: "Ted gets promoted and must fire one of his coworkers." },
+    { ep: 14, title: "Monday Night Football", desc: "The gang watches the Super Bowl on tape delay while avoiding the score." },
+    { ep: 15, title: "Lucky Penny", desc: "A lucky penny is blamed for Ted missing his flight to a job interview." },
+    { ep: 16, title: "Stuff", desc: "Robin is bothered by Ted's exes' stuff while Lily's one-woman show is terrible." },
+    { ep: 17, title: "Arrivederci, Fiero", desc: "Marshall's beloved Fiero breaks down and the gang reminisces about the car." },
+    { ep: 18, title: "Moving Day", desc: "Ted considers moving in with Robin and Barney steals the moving truck." },
+    { ep: 19, title: "Bachelor Party", desc: "Marshall's bachelor party goes off the rails in unexpected ways." },
+    { ep: 20, title: "Showdown", desc: "Barney appears on The Price Is Right while Marshall studies for the bar exam." },
+    { ep: 21, title: "Something Borrowed", desc: "The gang scrambles to fix problems on Marshall and Lily's wedding day." },
+    { ep: 22, title: "Something Blue", desc: "Ted and Robin reveal a secret at the wedding reception." },
+  ],
+  3: [
+    { ep: 1, title: "Wait For It", desc: "After Robin, Ted dates a girl with an 'X' tattoo to get over his ex." },
+    { ep: 2, title: "We're Not from Here", desc: "Barney and Ted pretend to be tourists to meet women." },
+    { ep: 3, title: "Third Wheel", desc: "Ted attempts to complete a rite of passage before his birthday." },
+    { ep: 4, title: "Little Boys", desc: "Robin dates a man with a kid despite not liking children." },
+    { ep: 5, title: "How I Met Everyone Else", desc: "Ted brings a new girl to meet the gang and everyone recalls how they met." },
+    { ep: 6, title: "I'm Not That Guy", desc: "A porn star with Marshall's name causes workplace embarrassment." },
+    { ep: 7, title: "Dowisetrepla", desc: "Marshall and Lily consider buying an apartment in a weird-named neighborhood." },
+    { ep: 8, title: "Spoiler Alert", desc: "The gang can't unhear each other's annoying habits once pointed out." },
+    { ep: 9, title: "Slapsgiving", desc: "Marshall delivers one of his remaining slaps on Thanksgiving." },
+    { ep: 10, title: "The Yips", desc: "Barney loses his confidence with women after meeting a former conquest." },
+    { ep: 11, title: "The Platinum Rule", desc: "The gang warns Ted not to date his doctor using past experience." },
+    { ep: 12, title: "No Tomorrow", desc: "Ted has an epic night out on St. Patrick's Day and almost misses fate." },
+    { ep: 13, title: "Ten Sessions", desc: "Ted asks out Stella, his dermatologist, across ten sessions." },
+    { ep: 14, title: "The Bracket", desc: "Barney's past exes are systematically sabotaging him." },
+    { ep: 15, title: "The Chain of Screaming", desc: "Marshall freaks out after being yelled at by his boss." },
+    { ep: 16, title: "Sandcastles in the Sand", desc: "Robin reconnects with her first boyfriend Simon." },
+    { ep: 17, title: "The Goat", desc: "Ted turns 30 and something terrible happens involving a goat." },
+    { ep: 18, title: "Rebound Bro", desc: "Barney searches for a new wingman after Ted quits." },
+    { ep: 19, title: "Everything Must Go", desc: "Lily sells her paintings to raise money for the apartment renovation." },
+    { ep: 20, title: "Miracles", desc: "Ted is in a car accident and the gang reflects on miracles." },
+  ],
+  4: [
+    { ep: 1, title: "Do I Know You?", desc: "Barney realizes he has feelings for Lily's best friend Robin." },
+    { ep: 2, title: "The Best Burger in New York", desc: "Marshall searches for the best burger he ever had." },
+    { ep: 3, title: "I Heart NJ", desc: "Ted considers moving to New Jersey to be with Stella." },
+    { ep: 4, title: "Intervention", desc: "The gang holds interventions for each other's bad habits." },
+    { ep: 5, title: "Shelter Island", desc: "Ted and Stella's wedding hits a major snag." },
+    { ep: 6, title: "Happily Ever After", desc: "Ted runs into Stella and her ex in the aftermath of the wedding." },
+    { ep: 7, title: "Not a Father's Day", desc: "Barney creates a holiday to celebrate not being a father." },
+    { ep: 8, title: "Woooo!", desc: "Lily joins a group of party girls while Marshall meets a strange man." },
+    { ep: 9, title: "The Naked Man", desc: "A date tries the 'Naked Man' move on Robin and it works." },
+    { ep: 10, title: "The Fight", desc: "Marshall and Ted get into their first real fight." },
+    { ep: 11, title: "Little Minnesota", desc: "Robin and Marshall bond over missing home during the holidays." },
+    { ep: 12, title: "Benefits", desc: "Ted and Robin agree to be roommates with benefits." },
+    { ep: 13, title: "Three Days of Snow", desc: "Marshall and Lily have an airport tradition in jeopardy." },
+    { ep: 14, title: "The Possimpible", desc: "Robin updates her résumé while Barney makes an epic video." },
+    { ep: 15, title: "The Stinsons", desc: "Barney's secret acting life is revealed to Ted and Marshall." },
+    { ep: 16, title: "Sorry, Bro", desc: "Ted's college girlfriend Karen resurfaces in New York." },
+    { ep: 17, title: "The Front Porch", desc: "Lily admits she's broken up Ted's past relationships on purpose." },
+    { ep: 18, title: "Old King Clancy", desc: "Robin reveals a secret Canadian celebrity encounter." },
+    { ep: 19, title: "Murtaugh", desc: "Ted makes a list of things he's too old for; Marshall challenges him." },
+    { ep: 20, title: "Mosbius Designs", desc: "Ted starts his own architecture firm from the apartment." },
+    { ep: 21, title: "The Three Days Rule", desc: "Ted texts a girl from Barney and Marshall's phones after getting her number." },
+    { ep: 22, title: "Right Place Right Time", desc: "Ted traces all the moments that led him to a pivotal encounter." },
+    { ep: 23, title: "As Fast As She Can", desc: "Stella's ex Tony offers Ted an unexpected opportunity." },
+    { ep: 24, title: "The Leap", desc: "The gang leaps between rooftops as Ted takes a career-changing leap of faith." },
+  ],
+  5: [
+    { ep: 1, title: "Definitions", desc: "Lily forces Robin and Barney to define their relationship." },
+    { ep: 2, title: "Double Date", desc: "Ted and Barney go on a double date with the same woman years apart." },
+    { ep: 3, title: "Robin 101", desc: "Barney takes a secret course to understand Robin better." },
+    { ep: 4, title: "The Sexless Innkeeper", desc: "Marshall and Lily try to find couple-friends." },
+    { ep: 5, title: "Duel Citizenship", desc: "Marshall and Ted take a road trip while Robin applies for citizenship." },
+    { ep: 6, title: "Bagpipes", desc: "Barney struggles with Robin's habits while newlyweds Marshall and Lily fight." },
+    { ep: 7, title: "The Rough Patch", desc: "The gang tries to break up Barney and Robin for their own good." },
+    { ep: 8, title: "The Rhode Island Wedding", desc: "The gang visits Rhode Island for a family wedding." },
+    { ep: 9, title: "Slapsgiving 2: Revenge of the Slap", desc: "Marshall gets to assign the delivery of a slap to someone else." },
+    { ep: 10, title: "The Window", desc: "Ted's dream girl becomes available and he races to ask her out." },
+    { ep: 11, title: "Last Cigarette Ever", desc: "The gang takes one final smoke break and quits for good." },
+    { ep: 12, title: "Girls Versus Suits", desc: "Barney must choose between women and his beloved suits." },
+    { ep: 13, title: "Jenkins", desc: "Marshall's coworker Jenkins is not who Marshall claimed." },
+    { ep: 14, title: "Perfect Week", desc: "Barney goes on a perfect week of dates without striking out." },
+    { ep: 15, title: "Rabbit or Duck", desc: "The gang debates whether Barney's phone is a blessing or a curse." },
+    { ep: 16, title: "Hooked", desc: "Ted realizes he's been keeping a woman on the hook for years." },
+    { ep: 17, title: "Of Course", desc: "Don dates Robin and Marshall tries to make Lily jealous." },
+    { ep: 18, title: "Say Cheese", desc: "Ted's girlfriend ruins a birthday photo." },
+    { ep: 19, title: "Zoo or False", desc: "Marshall claims to have been mugged by a monkey." },
+    { ep: 20, title: "Home Wreckers", desc: "Ted impulsively buys a rundown house." },
+    { ep: 21, title: "Twin Beds", desc: "Ted and Robin both want each other back at the same time." },
+    { ep: 22, title: "Robots Versus Wrestlers", desc: "The gang skips a highbrow party for Robots Versus Wrestlers." },
+    { ep: 23, title: "The Wedding Bride", desc: "A movie about Ted and Stella's breakup hits theaters." },
+    { ep: 24, title: "Doppelgangers", desc: "The gang searches for Barney's doppelganger as a sign for a big decision." },
+  ],
+  6: [
+    { ep: 1, title: "Big Days", desc: "Ted meets a mystery girl at the bar on a big day." },
+    { ep: 2, title: "Cleaning House", desc: "The gang helps Barney's mom clean out her house." },
+    { ep: 3, title: "Unfinished", desc: "GNB wants Ted to design their new headquarters." },
+    { ep: 4, title: "Subway Wars", desc: "The gang races across Manhattan to spot Woody Allen." },
+    { ep: 5, title: "Architect of Destruction", desc: "Ted must choose between his principles and his job." },
+    { ep: 6, title: "Baby Talk", desc: "Lily wants to get pregnant but Marshall uses baby talk." },
+    { ep: 7, title: "Canning Randy", desc: "Marshall must fire his hapless employee Randy." },
+    { ep: 8, title: "Natural History", desc: "The gang attends a benefit at the natural history museum." },
+    { ep: 9, title: "Glitter", desc: "Robin's secret Canadian kids' show is discovered." },
+    { ep: 10, title: "Blitzgiving", desc: "The group's holiday is plagued by the Blitz curse." },
+    { ep: 11, title: "The Mermaid Theory", desc: "Barney explains why men always end up attracted to women they know." },
+    { ep: 12, title: "False Positive", desc: "A pregnancy scare prompts everyone to make life changes." },
+    { ep: 13, title: "Bad News", desc: "Marshall awaits results from a fertility test as Lily counts down bad news." },
+    { ep: 14, title: "Last Words", desc: "The gang attends Marshall's father's funeral." },
+    { ep: 15, title: "Oh Honey", desc: "Zoey's cousin 'Honey' visits and everyone falls for her." },
+    { ep: 16, title: "Desperation Day", desc: "Lily visits Marshall in Minnesota over Valentine's Day." },
+    { ep: 17, title: "Garbage Island", desc: "Marshall fights corporate pollution while Ted pursues Zoey." },
+    { ep: 18, title: "A Change of Heart", desc: "Barney thinks he's having a heart attack when he develops feelings." },
+    { ep: 19, title: "Legendaddy", desc: "Barney meets his father for the first time." },
+    { ep: 20, title: "The Exploding Meatball Sub", desc: "Marshall's elaborate revenge prank takes years to execute." },
+    { ep: 21, title: "Hopeless", desc: "Barney introduces the gang to his father as old friends." },
+    { ep: 22, title: "The Perfect Cocktail", desc: "Ted and Zoey oppose the Arcadian demolition in different ways." },
+    { ep: 23, title: "Landmarks", desc: "The final verdict on the Arcadian approaches as Ted faces a decision." },
+    { ep: 24, title: "Challenge Accepted", desc: "The gang helps Ted move on as Marshall and Lily reveal big news." },
+  ],
+  7: [
+    { ep: 1, title: "The Best Man", desc: "Barney and Robin's wedding flashforward is teased as Ted is best man." },
+    { ep: 2, title: "The Naked Truth", desc: "Marshall interviews at an environmental firm with skeletons in his closet." },
+    { ep: 3, title: "Ducky Tie", desc: "Barney makes a bet with Marshall involving his beloved ducky tie." },
+    { ep: 4, title: "The Stinson Missile Crisis", desc: "Robin gets a restraining order and must see a therapist." },
+    { ep: 5, title: "Field Trip", desc: "Marshall takes his class on a field trip to GNB." },
+    { ep: 6, title: "Mystery vs. History", desc: "Ted dates a girl without Googling her; the gang makes bets on Lily's baby gender." },
+    { ep: 7, title: "Noretta", desc: "The gang discovers their partners resemble their parents." },
+    { ep: 8, title: "The Slutty Pumpkin Returns", desc: "Ted finally meets the slutty pumpkin from 2001." },
+    { ep: 9, title: "Disaster Averted", desc: "Barney gets out of wearing the ducky tie by earning three slaps." },
+    { ep: 10, title: "Tick Tick Tick", desc: "Barney and Robin realize they still have feelings for each other." },
+    { ep: 11, title: "The Rebound Girl", desc: "Ted and Barney drunkenly consider adopting a baby together." },
+    { ep: 12, title: "Symphony of Illumination", desc: "Robin receives life-changing news and tells it through a fantasy." },
+    { ep: 13, title: "Tailgate", desc: "Marshall hosts an annual New Year's tailgate for his father." },
+    { ep: 14, title: "46 Minutes", desc: "The gang falls apart for 46 minutes when Marshall and Lily move to the suburbs." },
+    { ep: 15, title: "The Burning Beekeeper", desc: "A party disaster unfolds in a chain of interconnected stories." },
+    { ep: 16, title: "The Drunk Train", desc: "Ted meets a girl on the drunk train; Barney and Quinn meet in a strip club." },
+    { ep: 17, title: "No Pressure", desc: "Ted confesses his feelings to Robin one final time." },
+    { ep: 18, title: "Karma", desc: "Barney pursues Quinn while Marshall and Lily adjust to the suburbs." },
+    { ep: 19, title: "The Broath", desc: "Barney makes the gang take an oath about Quinn." },
+    { ep: 20, title: "Trilogy Time", desc: "The gang watches the Star Wars trilogy every three years and imagines the future." },
+    { ep: 21, title: "Now We're Even", desc: "Barney tries to make every night legendary; Robin becomes famous." },
+    { ep: 22, title: "Good Crazy", desc: "Marshall and Lily's due date approaches while Ted dates excessively." },
+    { ep: 23, title: "The Magician's Code – Part 1", desc: "Marshall rushes to the hospital while Barney distracts him with a story." },
+    { ep: 24, title: "The Magician's Code – Part 2", desc: "Barney proposes to Quinn as Ted meets someone at the train station." },
+  ],
+  8: [
+    { ep: 1, title: "Farhampton", desc: "The gang deals with the aftermath of Barney's proposal." },
+    { ep: 2, title: "The Pre-Nup", desc: "Barney drafts a lengthy pre-nup that causes relationship chaos." },
+    { ep: 3, title: "Nannies", desc: "Marshall and Lily search for a nanny for Marvin." },
+    { ep: 4, title: "Who Wants to Be a Godparent?", desc: "Ted, Barney, and Robin compete to be Marvin's godparent." },
+    { ep: 5, title: "The Autumn of Break-Ups", desc: "Ted and Victoria face a decision about her ex." },
+    { ep: 6, title: "Splitsville", desc: "Robin breaks up with Nick but needs Barney's help." },
+    { ep: 7, title: "The Stamp Tramp", desc: "Ted and Marshall consider career changes." },
+    { ep: 8, title: "Twelve Horny Women", desc: "Marshall serves on jury duty in a surprisingly sexy trial." },
+    { ep: 9, title: "Lobster Crawl", desc: "Robin tries to sleep with Barney one last time before he's gone." },
+    { ep: 10, title: "The Over-Correction", desc: "Barney dates Robin's nemesis Patrice." },
+    { ep: 11, title: "The Final Page – Part 1", desc: "The gang attends Ted's building dedication while Barney's plan unfolds." },
+    { ep: 12, title: "The Final Page – Part 2", desc: "Barney reveals the master plan and proposes to Robin." },
+    { ep: 13, title: "Band or DJ?", desc: "Marshall and Lily clash over wedding band vs DJ." },
+    { ep: 14, title: "Ring Up!", desc: "Ted dates a much younger woman while Barney exploits his single status." },
+    { ep: 15, title: "P.S. I Love You", desc: "Robin's obsessive fan past in Canada is revealed." },
+    { ep: 16, title: "Bad Crazy", desc: "Ted tries to break up with Jeanette; Robin babysits Marvin." },
+    { ep: 17, title: "The Ashtray", desc: "The gang recalls a night at the Captain's apartment differently." },
+    { ep: 18, title: "Weekend at Barney's", desc: "Barney helps Ted with his playbook one last time." },
+    { ep: 19, title: "The Fortress", desc: "Robin must decide if she can live in Barney's bachelor pad." },
+    { ep: 20, title: "The Time Travelers", desc: "Ted imagines different versions of himself as he sits alone at MacLaren's." },
+    { ep: 21, title: "Romeward Bound", desc: "Lily gets her dream job in Rome; Ted meets the captain's girlfriend." },
+    { ep: 22, title: "The Bro Mitzvah", desc: "Barney endures the worst bachelor party imaginable." },
+    { ep: 23, title: "Something Old", desc: "Robin searches for something old buried in Central Park." },
+    { ep: 24, title: "Something New", desc: "The gang prepares to head to Barney and Robin's wedding weekend." },
+  ],
+  9: [
+    { ep: 1, title: "The Locket", desc: "Everyone travels to Farhampton for the wedding weekend." },
+    { ep: 2, title: "Coming Back", desc: "Lily is stranded in a cab as the group settles into the inn." },
+    { ep: 3, title: "Last Time in New York", desc: "Ted and Robin share a last adventure in New York." },
+    { ep: 4, title: "The Broken Code", desc: "Barney discovers Ted still has feelings for Robin." },
+    { ep: 5, title: "The Poker Game", desc: "A poker game gets tense over thank-you notes." },
+    { ep: 6, title: "Knight Vision", desc: "Ted meets three women with Marshall on the phone from Italy." },
+    { ep: 7, title: "No Questions Asked", desc: "The gang calls in 'no questions asked' favors for Marshall." },
+    { ep: 8, title: "The Lighthouse", desc: "The Captain takes Ted to a lighthouse with a surprising view." },
+    { ep: 9, title: "Platonish", desc: "A flashback reveals when Barney decided to pursue Robin." },
+    { ep: 10, title: "Mom and Dad", desc: "Barney tries to get his parents together at the wedding." },
+    { ep: 11, title: "Bedtime Stories", desc: "Marshall tells Marvin stories in rhyme on a bus." },
+    { ep: 12, title: "The Rehearsal Dinner", desc: "Robin is convinced Barney is ruining the rehearsal dinner." },
+    { ep: 13, title: "Bass Player Wanted", desc: "The Mother arrives at the inn and meets the gang one by one." },
+    { ep: 14, title: "Slapsgiving 3: Slappointment in Slapmarra", desc: "Marshall prepares his final slap with training montages." },
+    { ep: 15, title: "Unpause", desc: "Ted and The Mother have a special night; Barney gets very drunk." },
+    { ep: 16, title: "How Your Mother Met Me", desc: "The Mother's story from 2005 to 2013 is finally told." },
+    { ep: 17, title: "Sunrise", desc: "Ted lets go of Robin; Barney teaches two young men his ways." },
+    { ep: 18, title: "Rally", desc: "The gang tries to cure Barney's epic hangover on the wedding morning." },
+    { ep: 19, title: "Vesuvius", desc: "Ted and the Mother share a moment at Farhampton Inn in 2024." },
+    { ep: 20, title: "Daisy", desc: "The gang discovers a big secret about Lily's time in Italy." },
+    { ep: 21, title: "Gary Blauman", desc: "Ted tracks down Gary Blauman as the wedding dinner is set." },
+    { ep: 22, title: "The End of the Aisle", desc: "Barney and Robin have last-minute doubts before the ceremony." },
+    { ep: 23, title: "Last Forever – Part 1", desc: "The gang's lives rapidly change after the wedding weekend." },
+    { ep: 24, title: "Last Forever – Part 2", desc: "The story of how Ted met the Mother finally concludes." },
+  ]
+};
 
-      episodes = files;
-      renderEpisodes();
+// ══════ PROFILES ══════
+const DEFAULT_PROFILES = [
+  { name: "Ted", emoji: "💛", color: "#f5a623" },
+  { name: "Marshall", emoji: "🍺", color: "#4CAF50" },
+  { name: "Lily", emoji: "🎨", color: "#e91e63" },
+  { name: "Barney", emoji: "🕴️", color: "#2196F3" },
+  { name: "Robin", emoji: "🎙️", color: "#9C27B0" },
+];
 
-      if (episodes.length > 0) {
-        playEpisode(0);
-      }
-    });
+let profiles = JSON.parse(localStorage.getItem('himym_profiles') || 'null') || DEFAULT_PROFILES;
+let currentViewer = null;
+let currentSeason = 1;
+let driveLinks = JSON.parse(localStorage.getItem('himym_links') || '{}');
+let pendingEpisode = null;
+let playingEp = null;
 
-    function renderEpisodes() {
-      episodeList.innerHTML = '';
+// ══════ INIT ══════
+function init() {
+  renderProfiles();
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+  });
+}
 
-      episodes.forEach((episode, index) => {
-        const div = document.createElement('div');
-        div.className = 'episode';
-        div.innerText = episode.name;
+function renderProfiles() {
+  const grid = document.getElementById('profiles-grid');
+  grid.innerHTML = profiles.map((p, i) => `
+    <button class="profile-btn" onclick="selectProfile(${i})">
+      <div class="profile-avatar" style="background: ${p.color}22; border: 2px solid ${p.color}44;">
+        ${p.emoji}
+      </div>
+      <span class="profile-name">${p.name}</span>
+    </button>
+  `).join('');
+}
 
-        div.onclick = () => playEpisode(index);
+function selectProfile(idx) {
+  currentViewer = profiles[idx];
+  document.getElementById('who-modal').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('nav-avatar').textContent = currentViewer.emoji;
+  document.getElementById('nav-name').textContent = currentViewer.name;
+  renderSeasonTabs();
+  renderEpisodes(1);
+}
 
-        div.id = 'ep-' + index;
+function switchProfile() {
+  document.getElementById('who-modal').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
 
-        episodeList.appendChild(div);
-      });
-    }
+function addProfile() {
+  const name = prompt('Enter profile name:');
+  if (!name) return;
+  const emojis = ['🌟','🎵','🏀','🍕','🚀','🦊','🎭','🌊'];
+  const colors = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD','#98D8C8','#F7DC6F'];
+  const idx = profiles.length % emojis.length;
+  profiles.push({ name, emoji: emojis[idx], color: colors[idx] });
+  localStorage.setItem('himym_profiles', JSON.stringify(profiles));
+  renderProfiles();
+}
 
-    function playEpisode(index) {
-      currentIndex = index;
+// ══════ SEASON TABS ══════
+function renderSeasonTabs() {
+  const tabs = document.getElementById('season-tabs');
+  tabs.innerHTML = Object.keys(SEASONS).map(s => `
+    <button class="season-tab ${+s === currentSeason ? 'active' : ''}" onclick="switchSeason(${s})">S${s}</button>
+  `).join('');
+}
 
-      document.querySelectorAll('.episode').forEach(ep => {
-        ep.classList.remove('active');
-      });
+function switchSeason(s) {
+  currentSeason = s;
+  renderSeasonTabs();
+  renderEpisodes(s);
+}
 
-      document.getElementById('ep-' + index).classList.add('active');
+// ══════ EPISODE GRID ══════
+function renderEpisodes(season) {
+  const grid = document.getElementById('episodes-grid');
+  const eps = SEASONS[season];
+  const isPlaying = playingEp;
 
-      const episode = episodes[index];
-      const url = URL.createObjectURL(episode);
+  grid.innerHTML = eps.map(ep => {
+    const key = `S${String(season).padStart(2,'0')}E${String(ep.ep).padStart(2,'0')}`;
+    const hasLink = !!driveLinks[key];
+    const isThisPlaying = isPlaying && isPlaying.season == season && isPlaying.ep == ep.ep;
 
-      title.innerText = episode.name;
+    return `
+    <div class="ep-card ${isThisPlaying ? 'playing' : ''}" onclick="handleEpClick(${season}, ${ep.ep})">
+      <div class="ep-thumb">
+        <div class="ep-thumb-fallback">HIMYM</div>
+        <div class="ep-play-overlay">
+          <div class="ep-play-circle">▶</div>
+        </div>
+        <span class="ep-number-badge">${key}</span>
+        <span class="playing-indicator">▶ NOW PLAYING</span>
+        ${ep.ep <= 6 ? `<span class="ep-duration-badge">~22 min</span>` : '<span class="ep-duration-badge">~22 min</span>'}
+      </div>
+      <div class="ep-info">
+        <div class="ep-title">${ep.ep}. ${ep.title}</div>
+        <div class="ep-desc">${ep.desc}</div>
+        ${!hasLink ? '<div style="margin-top:6px; font-size:11px; color:#555;">📁 No link set — click to add</div>' : ''}
+      </div>
+    </div>
+    `;
+  }).join('');
+}
 
-      playerContainer.innerHTML = `
-        <video id="videoPlayer" controls autoplay>
-          <source src="${url}" type="${episode.type}">
-        </video>
-      `;
+// ══════ EPISODE CLICK ══════
+function handleEpClick(season, ep) {
+  const key = `S${String(season).padStart(2,'0')}E${String(ep).padStart(2,'0')}`;
+  if (driveLinks[key]) {
+    openPlayer(season, ep);
+  } else {
+    openDrivePrompt(season, ep);
+  }
+}
 
-      const video = document.getElementById('videoPlayer');
+// ══════ DRIVE PROMPT ══════
+function openDrivePrompt(season, ep) {
+  const key = `S${String(season).padStart(2,'0')}E${String(ep).padStart(2,'0')}`;
+  const epData = SEASONS[season].find(e => e.ep === ep);
+  pendingEpisode = { season, ep, key };
 
-      video.onended = () => {
-        if (currentIndex + 1 < episodes.length) {
-          playEpisode(currentIndex + 1);
-        }
-      };
-    }
-  </script>
+  document.getElementById('dp-title').textContent = `${key}: ${epData.title}`;
+  document.getElementById('dp-sub').textContent = 'Paste the Google Drive share link for this episode to play it here.';
+  document.getElementById('dp-input').value = driveLinks[key] || '';
+  document.getElementById('dp-hint').textContent = driveLinks[key] ? 'Current link found — you can update it.' : '';
+  document.getElementById('drive-prompt').classList.add('open');
+  setTimeout(() => document.getElementById('dp-input').focus(), 100);
+}
+
+function closeDrivePrompt() {
+  document.getElementById('drive-prompt').classList.remove('open');
+  pendingEpisode = null;
+}
+
+function saveDriveLink() {
+  const val = document.getElementById('dp-input').value.trim();
+  if (!val) { alert('Please paste a Google Drive link.'); return; }
+  if (!pendingEpisode) return;
+
+  driveLinks[pendingEpisode.key] = val;
+  localStorage.setItem('himym_links', JSON.stringify(driveLinks));
+  closeDrivePrompt();
+  openPlayer(pendingEpisode.season, pendingEpisode.ep);
+}
+
+// ══════ PLAYER ══════
+function buildEmbedUrl(driveUrl) {
+  // Convert drive share URL to embed URL
+  let fileId = null;
+
+  // Format: https://drive.google.com/file/d/FILE_ID/view
+  const m1 = driveUrl.match(/\/file\/d\/([^/]+)/);
+  if (m1) fileId = m1[1];
+
+  // Format: https://drive.google.com/open?id=FILE_ID
+  const m2 = driveUrl.match(/[?&]id=([^&]+)/);
+  if (!fileId && m2) fileId = m2[1];
+
+  if (fileId) {
+    return `https://drive.google.com/file/d/${fileId}/preview`;
+  }
+
+  // Fallback: return as-is (maybe already an embed link)
+  return driveUrl;
+}
+
+function openPlayer(season, ep) {
+  const key = `S${String(season).padStart(2,'0')}E${String(ep).padStart(2,'0')}`;
+  const epData = SEASONS[season].find(e => e.ep === ep);
+  if (!driveLinks[key]) { openDrivePrompt(season, ep); return; }
+
+  playingEp = { season, ep };
+  const embedUrl = buildEmbedUrl(driveLinks[key]);
+
+  document.getElementById('player-ep-title').textContent = `${key} — ${epData.title}`;
+  document.getElementById('player-iframe').src = embedUrl;
+  document.getElementById('player-modal').classList.add('open');
+
+  renderEpisodes(currentSeason);
+  localStorage.setItem('himym_last', JSON.stringify({ season, ep }));
+}
+
+function closePlayer() {
+  document.getElementById('player-modal').classList.remove('open');
+  document.getElementById('player-iframe').src = '';
+}
+
+function playLatest() {
+  const last = JSON.parse(localStorage.getItem('himym_last') || 'null');
+  if (last && driveLinks[`S${String(last.season).padStart(2,'0')}E${String(last.ep).padStart(2,'0')}`]) {
+    openPlayer(last.season, last.ep);
+  } else {
+    scrollToEpisodes();
+  }
+}
+
+function scrollToEpisodes() {
+  document.getElementById('episodes-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════ KEYBOARD ══════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePlayer();
+    closeDrivePrompt();
+  }
+});
+
+init();
+</script>
 
 </body>
 </html>
